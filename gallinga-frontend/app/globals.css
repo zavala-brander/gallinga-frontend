@@ -1,0 +1,231 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* stylelint-disable-next-line unknown-at-rules */
+:root {
+  /* 1. Tus colores base globales (paletas) - Estos no cambian entre temas */
+  --e-global-color-blue: oklch(0.48 0.23 270.39 / 1);
+  --e-global-color-blue-light: oklch(0.92 0 0 / 1);
+  --e-global-color-blue-dark: oklch(0.33 0.15 270.27 / 1);
+
+  --e-global-color-green: oklch(0.79 0.18 156.13 / 1);
+  --e-global-color-green-light: oklch(0.94 0.07 123.49 / 1);
+  --e-global-color-green-dark: oklch(0.65 0.12 150 / 1);
+
+  --e-global-color-red: oklch(0.66 0.23 33.43 / 1);
+  --e-global-color-red-light: oklch(0.93 0.05 59.64 / 1);
+  --e-global-color-red-dark: oklch(0.50 0.17 27.48 / 1);
+
+  --e-global-color-yellow: oklch(0.85 0.17 86.94 / 1);
+  --e-global-color-yellow-light: oklch(0.96 0.08 99.62 / 1);
+  --e-global-color-yellow-dark: oklch(0.71 0.14 86.82 / 1);
+
+  /* 2. Variables dinámicas que DynamicThemeHandler modificará (con valores iniciales para el tema claro por defecto) */
+  /*    Estos valores iniciales podrían ser de tu tema "BlueGreen" por defecto */
+  --color-primary: var(--e-global-color-blue);
+  --color-primary-V1: var(--e-global-color-blue-dark);  /* primaryDark */
+  --color-primary-V2: var(--e-global-color-blue-light); /* primaryLight */
+
+  --color-secondary: var(--e-global-color-green);
+  --color-secondary-V1: var(--e-global-color-green-dark);  /* secondaryDark */
+  --color-secondary-V2: var(--e-global-color-green-light); /* secondaryLight */
+
+  /* 3. Variables de Shadcn/UI y otras globales, definidas usando tus variables dinámicas para el TEMA CLARO */
+  --radius: 0.625rem;
+
+  /* Lógica invertida/complementaria respecto a .dark para el tema claro */
+  --background: var(--color-secondary);       /* Claro, opuesto al --background oscuro que usa --color-secondary */
+  --foreground: var(--color-primary);       /* Oscuro, opuesto al --foreground oscuro que usa --color-primary */
+
+  --card: var(--color-primary-V2);             /* Claro */
+  --card-foreground: var(--color-primary-V1);  /* Oscuro */
+
+  --popover: var(--color-primary-V2);          /* Claro */
+  --popover-foreground: var(--color-primary-V1); /* Oscuro */
+
+  --primary: var(--color-primary);             /* Controlado por DynamicTheme */
+  --primary-foreground: var(--color-primary-V2); /* Texto claro sobre primario (asumiendo que --color-primary es más oscuro que V2) */
+
+  --secondary: var(--color-secondary);         /* Controlado por DynamicTheme */
+  --secondary-foreground: var(--color-secondary-V1); /* Texto oscuro sobre secundario (asumiendo que --color-secondary es más claro que V1) */
+
+  --muted: var(--color-secondary-V2);          /* Un tono muy claro del secundario */
+  --muted-foreground: var(--color-secondary-V1); /* Un tono más oscuro del secundario para texto sobre muted */
+
+  --accent: var(--color-secondary-V1);         /* Un acento más oscuro del secundario */
+  --accent-foreground: var(--color-primary-V2);  /* Texto claro sobre el acento (opuesto a .dark --accent-foreground: var(--color-primary);) */
+
+  --destructive: var(--e-global-color-red);    /* Mantenemos el rojo base para destructivo */
+  --border: var(--color-secondary-V1);         /* Un borde basado en el secundario oscuro */
+  --input: var(--color-primary-V2);            /* Fondo de input muy claro */
+  --ring: var(--color-primary);                /* Anillo de foco usa el primario */
+
+  /* Variables de Chart y Sidebar para tema claro (lógica invertida/complementaria a .dark) */
+  --chart-1: var(--color-primary);
+  --chart-2: var(--color-secondary);
+  --chart-5: color-mix(in oklch, var(--color-primary) 60%, var(--color-secondary) 40%); /* Ejemplo de mezcla */
+  /* --chart-3 y --chart-4 no estaban definidos en .dark, puedes añadirlos aquí si es necesario */
+
+  --sidebar: var(--color-primary-V2);            /* Fondo de sidebar claro */
+  --sidebar-foreground: var(--color-primary-V1); /* Texto oscuro en sidebar */
+  --sidebar-primary: var(--color-secondary);       /* Color primario dentro del sidebar */
+  --sidebar-primary-foreground: var(--color-secondary-V1); /* Texto para el primario del sidebar */
+  --sidebar-accent: var(--color-secondary-V1);     /* Acento en sidebar */
+  --sidebar-accent-foreground: var(--color-primary-V2); /* Texto para el acento del sidebar */
+  --sidebar-border: var(--color-secondary-V1);   /* Borde del sidebar */
+  --sidebar-ring: var(--color-primary);          /* Anillo en sidebar */
+
+  /* Radii basados en la variable --radius principal */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+
+ /* Asegurar que --primary (shadcn) use el --color-primary dinámico */
+  /* Las definiciones de --primary, --secondary, etc., ya están arriba usando tus --color-* */
+}
+
+.dark {
+  /* Sobrescrituras para el tema oscuro */
+  --background: var(--color-primary);
+  --accent-foreground: var(--color-secondary-V2);
+  --accent: var(--color-primary-V1);
+  --accent-foreground: var(--color-primary); 
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-secondary);
+  --secondary: var(--color-secondary);
+  --foreground: var(--color-primary); 
+  --secondary-foreground: var(--color-primary); 
+  --ring: var(--color-secondary-V1);
+  --muted: var(--color-primary);
+  --border: var(--color-secondary);
+  --card: var(--e-global-color-green);
+  --popover: var(--color-secondary-V1);
+  --muted-foreground: var(--color-primary-V2);
+  --color-slate-50: var(--color-primary);
+  --color-slate-100: var(--color-secondary-V1);
+  --color-slate-200: var(--color-secondary);
+  --color-slate-300: var(--color-secondary);
+  --color-slate-400: var(--color-secondary);
+  --color-slate-500: var(--color-primary-V1);
+  --color-slate-600: var(--color-primary-V2);
+  --color-slate-700: var(--color-secondary-V2);
+  --color-slate-800: var(--color-primary);
+
+  --color-black: var(--color-secondary-V1);
+  --color-white: var(--color-secondary);
+  --color-red: var(--color-primary-V1);
+
+  --color-gray-600: var(--color-primary);
+  --color-gray-700: var(--color-secondary-V1);
+  --color-gray-800: var(--color-secondary);
+
+
+  --color-red-500: var(--color-secondary);
+  --color-red-600: var(--e-global-color-red);
+  --color-red-700: var(--e-global-color-red-dark);
+  --color-green-600: var(--e-global-color-green);
+  --color-green-700: var(--e-global-color-green-dark);
+  --color-green-800: var(--e-global-color-green-light);
+  --color-blue-500: var(--color-primary);
+  --color-blue-600: var(--e-global-color-blue);
+  --color-blue-700: var(--e-global-color-blue-dark);
+
+
+
+
+  --popover-foreground: oklch(0.984 0.003 247.858);
+
+  
+
+
+
+  --card-foreground: oklch(0.984 0.003 247.858);
+
+  --destructive: oklch(0.704 0.191 22.216);
+
+  --input: oklch(1 0 0 / 15%);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.208 0.042 265.755);
+  --sidebar-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.279 0.041 260.031);
+  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.551 0.027 264.364);
+
+  /* Las variables de Shadcn/UI como --secondary y --secondary-foreground se redefinen aquí para el tema oscuro */
+  /* Asegúrate de que estos valores sean los que deseas para el tema oscuro */
+  /* --secondary: oklch(0.279 0.041 260.031); // Ya se define usando var(--color-secondary) arriba */
+  /* --secondary-foreground: oklch(0.984 0.003 247.858); // Ya se define usando var(--color-primary) arriba */
+}
+
+@layer base {
+  * {
+    /* Reemplazar @apply con variables CSS directas o clases de utilidad de Tailwind */
+    border-color: var(--border); /* O theme('colors.border') si usas Tailwind JIT v2/v3 con theme() */
+    outline-color: oklch(from var(--ring) l c h / 0.5); /* Ejemplo de cómo podrías aplicar opacidad */
+  }
+  html {
+    background-color: var(--background) ; /* Clave */
+    color: var(--foreground) ;
+    scroll-behavior: smooth; /* Para scroll suave */
+    height: 100%; /* Asegurar que html ocupe toda la altura */
+  }
+  body {
+    background-color: var(--background) !important; /* Clave */
+    color: var(--foreground) ;
+    min-height: 100%; /* Asegurar que body ocupe al menos toda la altura */
+    display: flex; /* Ayuda si PageTransitionWrapper es el único hijo directo */
+    flex-direction: column; /* Ayuda si PageTransitionWrapper es el único hijo directo */
+  }
+}
+
+@media (hover: hover) {
+    .hover\:bg-accent:hover {
+        background-color: var(--accent);
+    }
+}
+
+::placeholder {
+    color: var(--color-primary);
+    opacity:60%;
+}
+
+.\[\&_svg\:not\(\[class\*\=\'size-\'\]\)\]\:size-4 svg:not([class*="size-"]) {
+    width: calc(var(--spacing) * 8);
+    height: calc(var(--spacing) * 8);
+}
+
+/* Estilos para la barra de scroll usando colores semánticos */
+::-webkit-scrollbar {
+    height: 8px; /* Ligeramente más ancha para mejor usabilidad táctil */
+    width: 8px;
+    background: color-mix(in oklab, var(--color-secondary) 90%, transparent); /* Fondo semi-transparente del color secundario */
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-primary); /* Color primario para el pulgar */
+    border-radius: 4px; /* Bordes redondeados para el pulgar */
+    border: 2px solid transparent; /* Espacio alrededor del pulgar */
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-V1); /* Color primario más oscuro al pasar el mouse */
+}
+
+::-webkit-scrollbar-track {
+    background: color-mix(in oklab, var(--color-secondary) 95%, transparent); /* Fondo de la pista aún más claro o casi transparente */
+    /* O puedes usar un color sólido si prefieres: background: var(--color-secondary-V2); */
+}
+
+@media (hover: hover) {
+    .hover\:text-accent-foreground:hover {
+        color: var(--accent-foreground);
+    }
+}

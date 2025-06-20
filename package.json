@@ -1,0 +1,31 @@
+{
+  "name": "gallinga-multiprovider-generator",
+  "version": "2.0.0",
+  "description": "Función para generar imágenes con múltiples proveedores de IA (Google y OpenAI).",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "gcloud functions deploy generarImagenGallinga --gen2 --runtime nodejs20 --project gallinga-project --region europe-west1 --source . --entry-point generarImagenGallinga --trigger-http --allow-unauthenticated --service-account gallinga-executor@gallinga-project.iam.gserviceaccount.com",
+    "deploy-gallery": "gcloud functions deploy obtenerGaleria --gen2 --runtime nodejs20 --project gallinga-project --region europe-west1 --source . --entry-point obtenerGaleria --trigger-http --allow-unauthenticated",
+    "deploy-finalize": "gcloud functions deploy finalizarCreacionGallinga --gen2 --runtime nodejs20 --project gallinga-project --region europe-west1 --source . --entry-point finalizarCreacionGallinga --trigger-http --allow-unauthenticated --service-account gallinga-executor@gallinga-project.iam.gserviceaccount.com",
+    "deploy-delete": "gcloud functions deploy eliminarCreacionGallinga --gen2 --runtime nodejs20 --project gallinga-project --region europe-west1 --source . --entry-point eliminarCreacionGallinga --trigger-http --allow-unauthenticated --service-account gallinga-executor@gallinga-project.iam.gserviceaccount.com",
+    "deploy-admin-delete": "gcloud functions deploy borrarTodoRastroImagen --gen2 --runtime nodejs20 --project gallinga-project --region europe-west1 --source . --entry-point borrarTodoRastroImagen --trigger-http --allow-unauthenticated --service-account gallinga-executor@gallinga-project.iam.gserviceaccount.com"
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^7.11.1",
+    "@google-cloud/functions-framework": "^3.5.1",
+    "@google-cloud/secret-manager": "^5.6.0",
+    "@google-cloud/storage": "^7.16.0",
+    "@google-cloud/translate": "^9.1.0",
+    "axios": "^1.7.2",
+    "google-auth-library": "^9.11.0"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "author": "PuraKasaka",
+  "license": "ISC",
+  "devDependencies": {
+    "knip": "^5.61.2",
+    "typescript": "^5.8.3"
+  }
+}

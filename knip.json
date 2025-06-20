@@ -1,0 +1,28 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignore": [ 
+    "gallinga-frontend/.next/**",
+    "gallinga-frontend/next-env.d.ts"
+  ],
+  "ignoreDependencies": [
+    "google-auth-library",
+    "tailwindcss"
+  ],
+  "ignoreBinaries": [
+    "gcloud"
+  ],
+  "workspaces": {
+    ".": { 
+      "entry": ["index.js"],
+      "project": ["*.js"] 
+    },
+    "gallinga-frontend": {
+      "entry": [
+        "app/layout.tsx",
+        "app/page.tsx",
+        "app/gallery/page.tsx"
+      ],
+      "project": ["**/*.{ts,tsx,mjs}"]
+    }
+  }
+}
