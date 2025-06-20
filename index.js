@@ -10,6 +10,8 @@ const crypto = require('crypto');
 const BUCKET_NAME = 'gallinga-images-gallinga-project';
 // Orígenes principales permitidos
 const PRIMARY_ALLOWED_ORIGIN_PURAKASAKA = 'https://purakasaka.com'; // Tu sitio principal
+const PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL = 'https://gallinga-story.vercel.app'; // Dominio Vercel principal
+const PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL = 'https://gallinga-story-c601uxxor-zavalas-projects.vercel.app'; // Dominio Vercel preview específico
 const PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP = 'https://gallinga.purakasaka.com'; // Tu nuevo subdominio para la app
 const LOCALHOST_DEV_FRONTEND = 'http://localhost:3000'; // Para desarrollo local del frontend
 
@@ -116,6 +118,8 @@ const leonardoProvider = {
 functions.http('generarImagenGallinga', async (req, res) => {
     const allowedOrigins = [
         PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
+        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
+        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
         LOCALHOST_DEV_FRONTEND,
         // PRIMARY_ALLOWED_ORIGIN_PURAKASAKA, // Descomenta si purakasaka.com también llamará a esta función
     ];
@@ -288,6 +292,8 @@ functions.http('leonardoCallbackHandler', async (req, res) => {
 functions.http('getGallingaJobStatus', async (req, res) => {
     const allowedOrigins = [
         PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
+        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
+        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
         LOCALHOST_DEV_FRONTEND,
     ];
     const origin = req.headers.origin;
@@ -348,6 +354,8 @@ functions.http('getGallingaJobStatus', async (req, res) => {
 functions.http('obtenerGaleria', async (req, res) => {
     const allowedOrigins = [
         PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
+        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
+        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
         LOCALHOST_DEV_FRONTEND,
     ];
     const origin = req.headers.origin;
@@ -417,6 +425,8 @@ functions.http('finalizarCreacionGallinga', async (req, res) => {
     console.log('[INFO] [finalizarCreacionGallinga] Función invocada. Verificando CORS y método...');
     const allowedOrigins = [
         PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
+        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
+        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
         LOCALHOST_DEV_FRONTEND,
     ];
     const origin = req.headers.origin;
@@ -498,6 +508,8 @@ functions.http('eliminarCreacionGallinga', async (req, res) => {
     console.log('[INFO] [eliminarCreacionGallinga] Función invocada. Verificando CORS y método...');
     const allowedOrigins = [
         PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
+        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
+        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
         LOCALHOST_DEV_FRONTEND,
     ];
     const origin = req.headers.origin;
@@ -560,6 +572,8 @@ functions.http('borrarTodoRastroImagen', async (req, res) => {
     console.log('[INFO] [borrarTodoRastroImagen] Función invocada. Verificando CORS y método...');
     const allowedOrigins = [ // Esta función es sensible, sé muy restrictivo.
         // PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP, // Solo si un admin logueado en la app puede hacerlo
+        // PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL, // No permitir desde Vercel directamente
+        // PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL, // No permitir desde Vercel directamente
         // LOCALHOST_DEV_FRONTEND, // Solo para desarrollo si es estrictamente necesario
     ];
     const origin = req.headers.origin;
@@ -685,6 +699,8 @@ functions.http('rateImageGallinga', async (req, res) => {
     console.log('[INFO] [rateImageGallinga] Función invocada. Verificando CORS y método...');
     const allowedOrigins = [
         PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
+        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
+        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
         LOCALHOST_DEV_FRONTEND,
     ];
     const origin = req.headers.origin;
