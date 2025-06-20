@@ -50,11 +50,11 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
-  description, // Añadir prop para la descripción
-  id, // Asegúrate de que id también esté disponible si lo usas para aria-describedby
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean
+  showCloseButton?: boolean;
+  description?: React.ReactNode; // Añadir description a los tipos
+  id?: string; // Añadir id a los tipos
 }) {
   return (
     <DialogPortal data-slot="dialog-portal">
@@ -66,18 +66,18 @@ function DialogContent({
           className
         )}
         // Si pasas una descripción, puedes usar su ID aquí
-        aria-describedby={description ? `${id || 'dialog'}-description` : undefined}
+        aria-describedby={props.description ? `${props.id || 'dialog'}-description` : undefined}
         {...props}
       >
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close" // Ejemplo: Botón de cerrar rojo
-            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-red-500 absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-0 focus:ring-offset-0 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
           >
             <XIcon />
           {/* Si pasas una descripción, renderízala (puede ser visualmente oculta) */}
-          {description && <DialogPrimitive.Description id={`${id || 'dialog'}-description`} className="sr-only">{description}</DialogPrimitive.Description>}
+          {props.description && <DialogPrimitive.Description id={`${props.id || 'dialog'}-description`} className="sr-only">{props.description}</DialogPrimitive.Description>}
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         )}
