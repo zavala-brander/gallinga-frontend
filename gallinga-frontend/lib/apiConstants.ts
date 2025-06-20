@@ -27,6 +27,7 @@ function getClientEnvVar(varName: string, defaultValue?: string): string {
   );
 }
 
+export const APP_BASE_URL = getClientEnvVar("NEXT_PUBLIC_APP_BASE_URL", "https://gallinga.purakasaka.com");
 export const API_BASE_URL = getClientEnvVar("NEXT_PUBLIC_API_BASE_URL", "https://europe-west1-gallinga-project.cloudfunctions.net");
 
 export const GENERATE_IMAGE_ENDPOINT = `${API_BASE_URL}/generarImagenGallinga`;

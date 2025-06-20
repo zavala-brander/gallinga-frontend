@@ -14,6 +14,7 @@ import {
   Lightbulb,
   Pencil,
   Mail,
+  Sparkles, // Añadir Sparkles
   XCircle,        // Para el icono de Cancelar/Eliminar
   CheckCircle2,   // Para el icono de Aprobar
   // Los siguientes ya los tienes como SVG personalizados, pero si quisieras usar lucide:
@@ -111,6 +112,7 @@ export const EyeIcon = (props: SVGProps<SVGSVGElement>) => <Eye {...props} />;
 export const LightbulbIcon = (props: SVGProps<SVGSVGElement>) => <Lightbulb {...props} />;
 export const PencilIcon = (props: SVGProps<SVGSVGElement>) => <Pencil {...props} />;
 export const MailIcon = (props: SVGProps<SVGSVGElement>) => <Mail {...props} />;
+export const SparklesIcon = (props: SVGProps<SVGSVGElement>) => <Sparkles {...props} />; // Exportar SparklesIcon
 
 // --- Iconos para Acciones de Aprobación (usando lucide-react) ---
 export const CancelIcon = (props: SVGProps<SVGSVGElement>) => <XCircle {...props} />;

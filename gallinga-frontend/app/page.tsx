@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from "react"; // Añadido Suspense
+import { Metadata } from 'next';
 import { useSearchParams, useRouter as useNextRouter } from 'next/navigation';
 import Lottie from "lottie-react";
 import Link from "next/link";
@@ -10,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"; // prettier-ignore
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"; // prettier-ignore
 import { LoadingSpinner, GalleryIcon, PlayIcon, PauseIcon, SkipBackIcon, SkipForwardIcon, ChevronLeftIcon, ChevronRightIcon, InfoIcon, UpArrow, EggIcon, DownloadIcon, ShareIcon, TwitterIcon, FacebookIcon, CopyIcon, StarIcon, CancelIcon, ApproveIcon } from "@/components/ui/icons";
-import gallingaLogo from "@/assets/lottie/gallinga-logo.json";
+import gallingaLogo from "@/assets/lottie/gallinga-logo.json"; // Lottie animation data
 import { StarRating } from "@/components/ui/StarRating";
 import { useSwipeable } from "react-swipeable";
 import { useLottieThemer } from '@/hooks/useLottieThemer';
@@ -29,6 +30,29 @@ import {
 } from '@/lib/apiConstants';
 import { instructionsContent, InstructionsLang } from '@/assets/instructionsContent'; // Importar el contenido de las instrucciones
 import { getTimestampInSeconds, handleDownload, handleSocialShare } from '@/lib/utils';
+
+const APP_BASE_URL = 'https://gallinga.purakasaka.com';
+const PURAKASAKA_URL = 'https://purakasaka.com';
+
+// GEO: Metadatos específicos para esta página
+export async function generateMetadata(): Promise<Metadata> {
+  const pageTitle = "Historias de la Gallinga: Cocrea la Historia de Brujilda la Gallina con IA";
+  const pageDescription = "Participa en la creación de una historia visual sin fin con Brujilda la Gallina. Escribe un prompt, genera una imagen con IA y continúa la narrativa. Un proyecto de Pura Kasaka."; // Refined description
+
+  return {
+    title: pageTitle,
+    description: pageDescription,
+    alternates: {
+      canonical: APP_BASE_URL,
+    },
+    openGraph: {
+      title: pageTitle,
+      description: pageDescription,
+      url: APP_BASE_URL,
+      type: 'website',
+    },
+  };
+}
 
 // Nuevo componente hijo para manejar la lógica de searchParams
 function PromptHandler({ setPromptForParent }: { setPromptForParent: (prompt: string) => void }) {
@@ -363,6 +387,73 @@ export default function HomePage() {
 
   return (
     <>
+      {/* GEO: Schemas para WebApplication, WebPage y FAQPage */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "@id": `${APP_BASE_URL}#app`,
+          "name": "Historias de la Gallinga",
+          "alternateName": "Gallinga App",
+          "url": APP_BASE_URL,
+          "applicationCategory": ["GameApplication", "EntertainmentApplication", "SoftwareApplication"],
+          "operatingSystem": "Web",
+          "description": "Es una aplicación web diseñada como un motor de engagement comunitario. Los usuarios continúan una historia en curso, proponiendo texto que la IA interpreta para generar una imagen.",
+          "featureList": [
+            "Generación de imágenes por IA a partir de prompts de texto.", // Keep as is
+            "Creación colaborativa de historias visuales.", // Keep as is
+            "Galería de escenas creadas por la comunidad.", // Keep as is
+            "Sistema de calificación de imágenes."
+          ],
+          "screenshot": `${APP_BASE_URL}/screenshot-gallinga.jpg`,
+          "creator": {
+            "@type": "Organization",
+            "@id": `${PURAKASAKA_URL}#organization`
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        }) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "url": APP_BASE_URL, // Canonical URL for the homepage
+          "name": "Jugar a Historias de la Gallinga",
+          "description": "Página principal para jugar y crear nuevas escenas en la historia colaborativa de Brujilda la Gallina.",
+          "isPartOf": { "@type": "WebSite", "@id": APP_BASE_URL }
+        }) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "¿Qué es Historias de la Gallinga?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "\"Historias de la Gallinga\" es un juego web gratuito y colaborativo desarrollado por Pura Kasaka. En él, los usuarios continúan una historia de forma colectiva, escribiendo el siguiente fragmento narrativo, que luego una IA interpreta para generar una imagen única."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿Cómo funciona la app de Brujilda la Gallina?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Para jugar, primero observas la última escena creada por otro usuario. Luego, escribes un texto breve para continuar la historia. Al enviarlo, una IA genera una nueva imagen basada en tu texto, y tu contribución se añade a la galería. Puedes firmar tu creación con tu nombre y un perfil social si lo deseas."
+              }
+            }
+          ]
+        }) }}
+      />
       {/* Envolvemos PromptHandler con Suspense */}
       <Suspense fallback={null}> {/* Puedes poner un spinner o null como fallback */}
         <PromptHandler setPromptForParent={setPrompt} />
@@ -420,9 +511,9 @@ export default function HomePage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="bg-gray-800 border-transparent text-slate-50" >
-                            <DropdownMenuItem onClick={() => handleSocialShare('twitter', currentChapter.prompt, "https://purakasaka.com/gallinga")} className="hover:bg-gray-700 focus:bg-gray-700"><TwitterIcon className="h-4 w-4 mr-2 p-2.5 fill-current text-slate-50"/>Compartir en X</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleSocialShare('facebook', currentChapter.prompt, "https://purakasaka.com/gallinga")} className="hover:bg-gray-700 focus:bg-gray-700"><FacebookIcon className="h-4 w-4 mr-2 p-2 text-slate-50"/>Compartir en Facebook</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleSocialShare('copy', currentChapter.prompt, "https://purakasaka.com/gallinga")} className="hover:bg-gray-700 focus:bg-gray-700"><CopyIcon className="h-4 w-4 mr-2 p-2 text-slate-50"/>Copiar Enlace</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleSocialShare('twitter', `¡Mira mi Kasaka! "${currentChapter.prompt}" por ${currentChapter.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${currentChapter.id}`)} className="hover:bg-gray-700 focus:bg-gray-700"><TwitterIcon className="h-4 w-4 mr-2 p-2.5 fill-current text-slate-50"/>Compartir en X</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleSocialShare('facebook', `¡Mira mi Kasaka! "${currentChapter.prompt}" por ${currentChapter.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${currentChapter.id}`)} className="hover:bg-gray-700 focus:bg-gray-700"><FacebookIcon className="h-4 w-4 mr-2 p-2 text-slate-50"/>Compartir en Facebook</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleSocialShare('copy', `¡Mira mi Kasaka! "${currentChapter.prompt}" por ${currentChapter.creatorName} en Historias de la Gallinga. ${APP_BASE_URL}/gallery/${currentChapter.id}`, `${APP_BASE_URL}/gallery/${currentChapter.id}`)} className="hover:bg-gray-700 focus:bg-gray-700"><CopyIcon className="h-4 w-4 mr-2 p-2 text-slate-50"/>Copiar Enlace</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -472,10 +563,10 @@ export default function HomePage() {
             </div>
           )}
           <form onSubmit={handleSubmit} className="p-2 bg-white text-slate-50 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200 dark:border-gray-700 space-y-2">
-            <Textarea placeholder="Continúa / Continued..." value={prompt} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)} className="w-full p-2 text-base bg-transparent border-none focus:ring-0 focus:outline-none resize-none" rows={2} required minLength={10} maxLength={500} disabled={isLoading}/>
+            <Textarea placeholder="Continúa la historia (tu Kasaka)... / Continue the story (your Kasaka)..." value={prompt} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)} className="w-full p-2 text-base bg-transparent border-none focus:ring-0 focus:outline-none resize-none" rows={2} required minLength={10} maxLength={500} disabled={isLoading}/>
             <div className="flex items-center gap-2 border-t  border-slate-200 dark:border-gray-700 pt-2">
-              <Input placeholder="Nombre / Name" value={creatorName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorName(e.target.value)} required disabled={isLoading} className="bg-slate-100 dark:bg-gray-800 border-none h-9"/>
-              <Input placeholder="Instagram (opcional)" value={creatorInstagram} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorInstagram(e.target.value)} disabled={isLoading} className="bg-slate-100 dark:bg-gray-800 border-none h-9"/>
+              <Input placeholder="Tu nombre / Your name" value={creatorName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorName(e.target.value)} required disabled={isLoading} className="bg-slate-100 dark:bg-gray-800 border-none h-9"/>
+              <Input placeholder="@usuario.instagram (opcional)" value={creatorInstagram} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorInstagram(e.target.value)} disabled={isLoading} className="bg-slate-100 dark:bg-gray-800 border-none h-9"/>
               <Button
                 type="submit" 
                 size="icon" 
@@ -510,7 +601,7 @@ export default function HomePage() {
               </DialogTrigger>
               <DialogContent className="max-w-md text-blue-600 dark:text-blue-600  bg-slate-700 dark:bg-gray-900" showCloseButton={true}> {/* Asegúrate de que showCloseButton sea true si quieres el botón de cerrar por defecto */}
                 <DialogHeader className="items-center">
-                  <div className="w-15 h-15">
+                  <div className="w-15 h-15" id="instructions-dialog-title">
                     <Lottie animationData={lottieAnimationData} loop={true} />
                   </div>
                   <DialogTitle>{instructionsContent[instructionsLang].title}</DialogTitle>
@@ -533,7 +624,7 @@ export default function HomePage() {
                               </h4>
                             </div>
                           )}
-                          <p className={`text-blue-600 dark:text-blue-600 ${IconComponent && step.heading ? 'ml-7' : ''}`}> {/* Texto con indentación condicional */}
+                          <p id={`instructions-step-${step.id}-description`} className={`text-blue-600 dark:text-blue-600 ${IconComponent && step.heading ? 'ml-7' : ''}`}> {/* Texto con indentación condicional */}
                             {step.text}
                           </p>
                         </div>
@@ -579,14 +670,14 @@ export default function HomePage() {
       </footer>
 
       {pendingApprovalImage && (
-        <Dialog open={!!pendingApprovalImage} onOpenChange={(isOpen) => { if (!isOpen && !isProcessingAction) setPendingApprovalImage(null); }}>
+        <Dialog open={!!pendingApprovalImage} onOpenChange={(isOpen) => { if (!isOpen && !isProcessingAction) setPendingApprovalImage(null); }} aria-labelledby="approval-dialog-title" aria-describedby="approval-dialog-description">
           <DialogContent className="bg-white dark:bg-gray-900 data-[state=open]:animate__animated data-[state=open]:animate__zoomIn data-[state=open]:animate__faster" showCloseButton={false}>
             {/* Añadir DialogHeader, DialogTitle y DialogDescription para accesibilidad */}
             <DialogHeader>
-              <DialogTitle>Confirmar / Confirm</DialogTitle>
-              <DialogDescription>
+              <DialogTitle id="approval-dialog-title">Confirmar / Confirm</DialogTitle>
+              <DialogDescription id="approval-dialog-description">
                 {pendingApprovalImage.prompt
-                  ? `Revisa la imagen generada para: "${pendingApprovalImage.prompt.substring(0, 50)}..." y aprueba o elimina.`
+                  ? `Revisa la imagen generada para: "${pendingApprovalImage.prompt.substring(0, 50)}${pendingApprovalImage.prompt.length > 50 ? '...' : ''}" y aprueba o elimina.`
                   : "Revisa la imagen generada y aprueba o elimina."}
               </DialogDescription>
             </DialogHeader>
@@ -635,7 +726,7 @@ export default function HomePage() {
                       <LoadingSpinner className="h-4 w-4 animate-spin" />
                     </motion.div>
                   ) : (
-                    <motion.span key="text-approve" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex items-center gap-1.5">
+                    <motion.span key="text-approve" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex items-center gap-1.5"> ¡Publicar Kasaka!
                       <ApproveIcon className="h-4 w-4 p-1" /> Aprobado
                     </motion.span>
                   )}

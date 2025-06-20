@@ -9,12 +9,12 @@ import { StarRating } from "@/components/ui/StarRating";
 import { ImageSerialNumber } from "@/components/ui/ImageSerialNumber";
 import { StoryChapter as GalleryImage } from '@/lib/types';
 import { handleDownload, handleSocialShare } from '@/lib/utils';
+import { APP_BASE_URL } from '@/lib/apiConstants';
 
 interface GalleryImageCardProps {
   img: GalleryImage;
   index: number; // Para la prop priority de Next/Image
   stableSortedImagesForSerialNumber: GalleryImage[];
-  onImageClick: (image: GalleryImage) => void;
   onRate: (imageId: string, rating: number) => void;
   ratingImageId: string | null;
 }
@@ -23,7 +23,6 @@ export const GalleryImageCard: React.FC<GalleryImageCardProps> = ({
   img, 
   index, 
   stableSortedImagesForSerialNumber, 
-  onImageClick,
   onRate,
   ratingImageId 
 }) => {
@@ -34,8 +33,7 @@ export const GalleryImageCard: React.FC<GalleryImageCardProps> = ({
 
   return (
     <div
-      className="bg-black dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden cursor-pointer group flex flex-col hover:shadow-xl transition-shadow duration-300 animate__animated animate__fadeInUp animate__faster"
-      onClick={() => onImageClick(img)}
+      className="bg-black dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden group flex flex-col hover:shadow-xl transition-shadow duration-300 animate__animated animate__fadeInUp animate__faster h-full"
       style={{ animationDelay: `${index * 50}ms` }} // Staggered animation
     >
       <div className="aspect-[3/2] w-full overflow-hidden relative rounded-t-md group">
@@ -67,9 +65,9 @@ export const GalleryImageCard: React.FC<GalleryImageCardProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="bg-gray-600 border-transparent text-slate-200">
-              <DropdownMenuItem onClick={() => handleSocialShare('twitter', img.prompt, "https://purakasaka.com/gallinga-story")} className="hover:!bg-gray-700"><TwitterIcon className="h-4 w-4 p-2.5 mr-2 fill-current text-slate-200"/>Compartir en X</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleSocialShare('facebook', img.prompt, "https://purakasaka.com/gallinga-story")} className="hover:!bg-gray-700"><FacebookIcon className="h-4 p-2 w-4 mr-2 fill-current text-slate-200"/>Compartir en Facebook</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleSocialShare('copy', img.prompt, "https://purakasaka.com/gallinga-story")} className="hover:!bg-gray-700"><CopyIcon className="h-4 w-4 p-2 mr-2  text-slate-200"/>Copiar Enlace</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSocialShare('twitter', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><TwitterIcon className="h-4 w-4 p-2.5 mr-2 fill-current text-slate-200"/>Compartir en X</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSocialShare('facebook', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><FacebookIcon className="h-4 p-2 w-4 mr-2 fill-current text-slate-200"/>Compartir en Facebook</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSocialShare('copy', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga. ${APP_BASE_URL}/gallery/${img.id}`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><CopyIcon className="h-4 w-4 p-2 mr-2  text-slate-200"/>Copiar Enlace</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
