@@ -50,6 +50,8 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  description, // Añadir prop para la descripción
+  id, // Asegúrate de que id también esté disponible si lo usas para aria-describedby
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
@@ -63,6 +65,8 @@ function DialogContent({
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
           className
         )}
+        // Si pasas una descripción, puedes usar su ID aquí
+        aria-describedby={description ? `${id || 'dialog'}-description` : undefined}
         {...props}
       >
         {children}
@@ -72,6 +76,8 @@ function DialogContent({
             className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-red-500 absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-0 focus:ring-offset-0 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
           >
             <XIcon />
+          {/* Si pasas una descripción, renderízala (puede ser visualmente oculta) */}
+          {description && <DialogPrimitive.Description id={`${id || 'dialog'}-description`} className="sr-only">{description}</DialogPrimitive.Description>}
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         )}

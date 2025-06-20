@@ -2,6 +2,7 @@
   "name": "gallinga-multiprovider-generator",
   "version": "2.0.0",
   "description": "Función para generar imágenes con múltiples proveedores de IA (Google y OpenAI).",
+  "private": true,
   "main": "index.js",
   "scripts": {
     "deploy": "gcloud functions deploy generarImagenGallinga --gen2 --runtime nodejs20 --project gallinga-project --region europe-west1 --source . --entry-point generarImagenGallinga --trigger-http --allow-unauthenticated --service-account gallinga-executor@gallinga-project.iam.gserviceaccount.com",

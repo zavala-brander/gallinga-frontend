@@ -56,19 +56,44 @@ export default function HomePage() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
+        setIsLoading(true); 
+        setError(null); 
         const response = await fetch(GALLERY_API_ENDPOINT);
-        const dataFromApi: StoryChapter[] = await response.json();
-        if (dataFromApi && dataFromApi.length > 0) {
-          const augmentedData: StoryChapter[] = dataFromApi.map(chapter => ({
+        if (!response.ok) { 
+          const errorText = await response.text().catch(() => "No se pudo leer el cuerpo del error");
+          throw new Error(`API Error: ${response.status}`);
+        }
+        const dataFromApi = await response.json();
+
+        let imagesToSet: StoryChapter[] = [];
+        if (dataFromApi && dataFromApi.images && Array.isArray(dataFromApi.images)) {
+          imagesToSet = dataFromApi.images;
+        } else if (Array.isArray(dataFromApi)) { 
+          imagesToSet = dataFromApi;
+        } else {
+          setStory([]); 
+          setError('Error: Formato de datos inesperado de la API.'); 
+          setIsLoading(false);
+          return;
+        }
+
+        if (imagesToSet.length > 0) {
+          const augmentedData: StoryChapter[] = imagesToSet.map(chapter => ({
             ...chapter,
             averageRating: chapter.averageRating || 0,
             ratingCount: chapter.ratingCount || 0,
           }));
           setStory(augmentedData);
-          // setIsCurrentImageLoading(true); // Se manejará por el efecto [currentIndex, story, prevImageUrlForEffect]
           setCurrentIndex(0);
+        } else {
+          setStory([]);
         }
-      } catch (err) { console.error("Error al cargar la historia:", err); }
+      } catch (err: any) { 
+        setError(err.message || 'Error al cargar la historia.');
+        setStory([]); 
+      } finally {
+        setIsLoading(false); 
+      }
     };
     fetchHistory();
   }, []);
