@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from "react"; // Añadido Suspense
 import { useSearchParams, useRouter as useNextRouter } from 'next/navigation';
 import Lottie from "lottie-react";
 import Link from "next/link";
@@ -30,9 +30,26 @@ import {
 import { instructionsContent, InstructionsLang } from '@/assets/instructionsContent'; // Importar el contenido de las instrucciones
 import { getTimestampInSeconds, handleDownload, handleSocialShare } from '@/lib/utils';
 
-export default function HomePage() {
-  const searchParams = useSearchParams(); // Keep this if used
+// Nuevo componente hijo para manejar la lógica de searchParams
+function PromptHandler({ setPromptForParent }: { setPromptForParent: (prompt: string) => void }) {
+  const searchParams = useSearchParams();
   const nextRouter = useNextRouter();
+
+  useEffect(() => {
+    const promptFromQuery = searchParams.get('prompt');
+    if (promptFromQuery) {
+      setPromptForParent(decodeURIComponent(promptFromQuery));
+      // Limpiar el query param de la URL después de leerlo
+      // Esto solo funciona en el cliente, lo cual está bien para este caso.
+      const currentPath = window.location.pathname;
+      nextRouter.replace(currentPath, { scroll: false });
+    }
+  }, [searchParams, nextRouter, setPromptForParent]);
+
+  return null; // Este componente no renderiza UI directamente
+}
+
+export default function HomePage() {
   const [prompt, setPrompt] = useState("");
   const lottieAnimationData = useLottieThemer(gallingaLogo);
   const [creatorName, setCreatorName] = useState("");
@@ -103,15 +120,6 @@ export default function HomePage() {
     if (storedAttempts !== null) setRemainingAttempts(parseInt(storedAttempts, 10));
     else setRemainingAttempts(REQUEST_LIMIT);
   }, []);
-
-  useEffect(() => {
-    const promptFromQuery = searchParams.get('prompt');
-    if (promptFromQuery) {
-      setPrompt(decodeURIComponent(promptFromQuery));
-      const currentPath = window.location.pathname;
-      nextRouter.replace(currentPath, { scroll: false });
-    }
-  }, [searchParams, nextRouter]);
 
   const stableSortedStoryForSerialNumber = useMemo(() => {
     return [...story].sort((a, b) => getTimestampInSeconds(a.createdAt) - getTimestampInSeconds(b.createdAt));
@@ -354,7 +362,12 @@ export default function HomePage() {
   // }
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground"> {/* Restaurado con bg-background y text-foreground semánticos */}
+    <>
+      {/* Envolvemos PromptHandler con Suspense */}
+      <Suspense fallback={null}> {/* Puedes poner un spinner o null como fallback */}
+        <PromptHandler setPromptForParent={setPrompt} />
+      </Suspense>
+      <div className="flex flex-col h-screen bg-background text-foreground"> {/* Restaurado con bg-background y text-foreground semánticos */}
       <header className="fixed top-0 left-0 right-0 z-30 flex justify-between items-center p-2 md:p-4 dark:bg-black/50 ">
         <a href="https://purakasaka.com" target="_blank" rel="noopener noreferrer" className="w-12 h-12 hover:scale-110 active:scale-95 transition-transform duration-150">
           <Lottie animationData={lottieAnimationData} loop={true} />
@@ -632,6 +645,7 @@ export default function HomePage() {
           </DialogContent>
         </Dialog>
       )}
-    </div>
+      </div>
+    </>
   );
 }
