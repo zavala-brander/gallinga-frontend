@@ -371,8 +371,26 @@ functions.http('obtenerGaleria', async (req, res) => {
     }
 
     try {
-        //  Desktop: 2 filas de 4 imágenes = 8. Mobile: 6 imágenes.
-        const { limit = 8, startAfter } = req.query; 
+        const { limit = 8, startAfter, id } = req.query;
+
+        // --- INICIO: Lógica para obtener una sola imagen por ID ---
+        if (id) {
+            console.log(`[INFO] [obtenerGaleria] Buscando imagen individual con ID: ${id}`);
+            const docRef = firestore.collection('gallinga_gallery').doc(id);
+            const doc = await docRef.get();
+
+            if (!doc.exists) {
+                console.warn(`[WARN] [obtenerGaleria] Imagen con ID ${id} no encontrada.`);
+                return res.status(404).json({ error: 'Imagen no encontrada.' });
+            }
+
+            const imageData = { id: doc.id, ...doc.data() };
+            console.log(`[INFO] [obtenerGaleria] Imagen ${id} encontrada y devuelta.`);
+            return res.status(200).json(imageData);
+        }
+        // --- FIN: Lógica para obtener una sola imagen por ID ---
+
+
         const parsedLimit = parseInt(limit, 10) || 12; // Asegurar que parsedLimit tenga un valor válido
         console.log(`[INFO] [obtenerGaleria] Request received. Query params: limit=${limit}, startAfter=${startAfter}. Parsed limit: ${parsedLimit}`);
 
@@ -416,7 +434,7 @@ functions.http('obtenerGaleria', async (req, res) => {
 
     } catch (error) {
         // Loguear los parámetros recibidos también en caso de error
-        console.error(`[ERROR] [obtenerGaleria] Error processing request. Query params: limit=${req.query.limit}, startAfter=${req.query.startAfter}. Error:`, error);
+        console.error(`[ERROR] [obtenerGaleria] Error procesando la solicitud. Query params: ${JSON.stringify(req.query)}. Error:`, error);
         res.status(500).json({ error: "Error al cargar la galería.", details: error.message });
     }
 });
