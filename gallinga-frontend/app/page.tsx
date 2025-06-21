@@ -20,14 +20,13 @@ import { StoryChapter, PendingApprovalImage } from '@/lib/types';
 import { AnimatePresence, motion } from 'framer-motion'; // Para animaciones en botones
 import { LoadingGiphy } from '@/components/ui/LoadingGiphy';
 import {
+  APP_BASE_URL,
   GALLERY_API_ENDPOINT,
   GENERATE_IMAGE_ENDPOINT,
   APPROVE_ENDPOINT,
   DELETE_ENDPOINT,
   STATUS_ENDPOINT_BASE,
   RATE_IMAGE_API_ENDPOINT,
-  REQUEST_LIMIT,
-  APP_BASE_URL,
   PURAKASAKA_URL
 } from '@/lib/apiConstants';
 import { instructionsContent, InstructionsLang } from '@/assets/instructionsContent'; // Importar el contenido de las instrucciones
@@ -51,6 +50,8 @@ function PromptHandler({ setPromptForParent }: { setPromptForParent: (prompt: st
 
   return null; // Este componente no renderiza UI directamente
 }
+
+const REQUEST_LIMIT = 5; // Default value, should match backend
 
 export default function HomePage() {
   const [prompt, setPrompt] = useState("");
