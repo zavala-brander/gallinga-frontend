@@ -11,6 +11,7 @@ const BUCKET_NAME = 'gallinga-images-gallinga-project';
 // Orígenes principales permitidos
 const PRIMARY_ALLOWED_ORIGIN_PURAKASAKA = 'https://purakasaka.com'; // Tu sitio principal
 const PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL = 'https://gallinga-story.vercel.app'; // Dominio Vercel principal
+const LATEST_PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL = 'https://gallinga-story-4p87hgdma-zavalas-projects.vercel.app'; // URL de preview de Vercel (desde logs)
 const PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL = 'https://gallinga-story-c601uxxor-zavalas-projects.vercel.app'; // Dominio Vercel preview específico
 const PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP = 'https://gallinga.purakasaka.com'; // Tu nuevo subdominio para la app
 const LOCALHOST_DEV_FRONTEND = 'http://localhost:3000'; // Para desarrollo local del frontend
@@ -37,6 +38,7 @@ const enableCors = (req, res) => {
   const allowedOrigins = [
     PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
     PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
+    LATEST_PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
     PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
     LOCALHOST_DEV_FRONTEND,
     PRIMARY_ALLOWED_ORIGIN_PURAKASAKA,
