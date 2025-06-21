@@ -2,6 +2,14 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: '/api-proxy/:path*',
+        destination: 'https://europe-west1-gallinga-project.cloudfunctions.net/:path*',
+      },
+    ];
+  },
   async headers() {
     const cspHeader = `
       default-src 'self';

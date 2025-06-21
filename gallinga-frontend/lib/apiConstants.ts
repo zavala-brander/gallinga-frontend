@@ -5,8 +5,15 @@
  * Proporciona valores por defecto para un funcionamiento básico si las variables no están definidas.
  */
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 export const APP_BASE_URL = process.env.NEXT_PUBLIC_APP_BASE_URL || "https://gallinga.purakasaka.com";
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://europe-west1-gallinga-project.cloudfunctions.net";
+
+// Usa el proxy en desarrollo para evitar errores de CORS, y la URL real en producción.
+export const API_BASE_URL = isDevelopment
+  ? '/api-proxy'
+  : process.env.NEXT_PUBLIC_API_BASE_URL || "https://europe-west1-gallinga-project.cloudfunctions.net";
+
 export const PURAKASAKA_URL = process.env.NEXT_PUBLIC_PURAKASAKA_URL || "https://purakasaka.com";
 
 export const GENERATE_IMAGE_ENDPOINT = `${API_BASE_URL}/generarImagenGallinga`;
