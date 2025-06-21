@@ -48,6 +48,12 @@ export default function SingleImageClientContent({ image: initialImage }: Single
     }
   };
 
+  const handleSharePlatformClick = (e: MouseEvent, platform: 'twitter' | 'facebook') => {
+    // Aunque no está dentro de un <Link>, es buena práctica para consistencia.
+    e.stopPropagation();
+    handleSocialShare(platform, `¡Mira esta Kasaka! "${image.prompt}" por ${image.creatorName}`, `${APP_BASE_URL}/gallery/${image.id}`);
+  };
+
   const handleCopyClick = async (e: MouseEvent) => {
     e.stopPropagation();
     if (isCopied) return;
@@ -115,8 +121,8 @@ export default function SingleImageClientContent({ image: initialImage }: Single
                     <Button variant="outline" className="flex-grow md:flex-grow-0"><ShareIcon className="h-4 w-4 mr-2 p-1 text-slate-200" />Compartir</Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-gray-800 border-transparent text-slate-50">
-                    <DropdownMenuItem onClick={() => handleSocialShare('twitter', `¡Mira esta Kasaka! "${image.prompt}" por ${image.creatorName}`, `${APP_BASE_URL}/gallery/${image.id}`)}><TwitterIcon className="h-4 w-4 mr-2 p-1" />Compartir en X</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleSocialShare('facebook', `¡Mira esta Kasaka! "${image.prompt}" por ${image.creatorName}`, `${APP_BASE_URL}/gallery/${image.id}`)}><FacebookIcon className="h-4 w-4 mr-2 p-1" />Compartir en Facebook</DropdownMenuItem>
+                    <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'twitter')}><TwitterIcon className="h-4 w-4 mr-2 p-1" />Compartir en X</DropdownMenuItem>
+                    <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'facebook')}><FacebookIcon className="h-4 w-4 mr-2 p-1" />Compartir en Facebook</DropdownMenuItem>
                     <DropdownMenuItem onClick={handleCopyClick} className="hover:!bg-gray-700 focus:!bg-gray-700">
                       {isCopied ? <CheckIcon className="h-4 w-4 mr-2 p-1 text-green-400" /> : <CopyIcon className="h-4 w-4 mr-2 p-1" />}
                       {isCopied ? '¡Copiado!' : 'Copiar Enlace'}

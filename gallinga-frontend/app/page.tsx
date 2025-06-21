@@ -366,8 +366,16 @@ export default function HomePage() {
   //   console.log(`[RENDER] isCurrentImageLoading: ${isCurrentImageLoading}, currentChapter URL: ${currentChapter.imageUrl}`);
   // }
 
-  const handleCopyClick = async (e: React.MouseEvent) => {
+  const handleSharePlatformClick = (e: React.MouseEvent, platform: 'twitter' | 'facebook') => {
+    e.preventDefault();
     e.stopPropagation();
+    if (!currentChapter) return;
+    handleSocialShare(platform, `¡Mira mi Kasaka! "${currentChapter.prompt}" por ${currentChapter.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${currentChapter.id}`);
+  };
+
+  const handleCopyClick = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Buena práctica para consistencia
+    e.stopPropagation(); 
     if (isCopied || !currentChapter) return;
 
     const success = await handleSocialShare(
@@ -382,6 +390,12 @@ export default function HomePage() {
     } else {
       alert("Error al copiar el enlace."); // Fallback for rare cases
     }
+  };
+
+  const handleDownloadClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!currentChapter) return;
+    handleDownload(currentChapter.imageUrl, currentChapter.id);
   };
 
   return (
@@ -488,10 +502,7 @@ export default function HomePage() {
                         <Button
                           variant="outline"
                           size="icon"
-                                                  onClick={(e: React.MouseEvent) => {
-                            e.stopPropagation();
-                            handleDownload(currentChapter.imageUrl, currentChapter.id);
-                          }}
+                          onClick={handleDownloadClick}
                           title="Descargar imagen"
                           className="h-9 w-9 bg-slate-200 dark:bg-gray-800 hover:bg-slate-100 border-slate-400 hover:border-slate-200 text-slate-800 dark:text-slate-200 hover:text-white hover:scale-110 active:scale-95 transition-transform duration-150"
                         >
@@ -510,9 +521,9 @@ export default function HomePage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="bg-gray-800 border-transparent text-slate-50" >
-                            <DropdownMenuItem onClick={() => handleSocialShare('twitter', `¡Mira mi Kasaka! "${currentChapter.prompt}" por ${currentChapter.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${currentChapter.id}`)} className="hover:bg-gray-700 focus:bg-gray-700"><TwitterIcon className="h-4 w-4 mr-2 p-2.5 fill-current text-slate-50" />Compartir en X</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleSocialShare('facebook', `¡Mira mi Kasaka! "${currentChapter.prompt}" por ${currentChapter.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${currentChapter.id}`)} className="hover:bg-gray-700 focus:bg-gray-700"><FacebookIcon className="h-4 w-4 mr-2 p-2 text-slate-50" />Compartir en Facebook</DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleCopyClick} className="hover:bg-gray-700 focus:bg-gray-700">
+                            <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'twitter')} className="hover:bg-gray-700 focus:bg-gray-700 cursor-pointer"><TwitterIcon className="h-4 w-4 mr-2 p-2.5 fill-current text-slate-50" />Compartir en X</DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'facebook')} className="hover:bg-gray-700 focus:bg-gray-700 cursor-pointer"><FacebookIcon className="h-4 w-4 mr-2 p-2 text-slate-50" />Compartir en Facebook</DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleCopyClick} className="hover:bg-gray-700 focus:bg-gray-700 cursor-pointer">
                               {isCopied ? <CheckIcon className="h-4 w-4 mr-2 p-2 text-green-400"/> : <CopyIcon className="h-4 w-4 mr-2 p-2 text-slate-50"/>}
                               {isCopied ? '¡Copiado!' : 'Copiar Enlace'}
                             </DropdownMenuItem>

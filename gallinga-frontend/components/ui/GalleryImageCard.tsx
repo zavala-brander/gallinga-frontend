@@ -29,10 +29,17 @@ export const GalleryImageCard: React.FC<GalleryImageCardProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
+  const handleSharePlatformClick = (e: MouseEvent, platform: 'twitter' | 'facebook') => {
+    e.preventDefault(); // Crucial: Evita que el Link padre se active.
+    e.stopPropagation();
+    handleSocialShare(platform, `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`);
+  };
+
   const globalIndex = stableSortedImagesForSerialNumber.findIndex(sImg => sImg.id === img.id);
   const serial = globalIndex !== -1 ? `01-${String(globalIndex + 1).padStart(4, '0')}` : null;
 
   const handleCopyClick = async (e: MouseEvent) => {
+    e.preventDefault(); // Crucial: Evita que el Link padre se active.
     e.stopPropagation();
     if (isCopied) return;
 
@@ -48,6 +55,12 @@ export const GalleryImageCard: React.FC<GalleryImageCardProps> = ({
     } else {
       alert("Error al copiar el enlace."); // Fallback for rare cases
     }
+  };
+
+  const handleDownloadClick = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleDownload(img.imageUrl, img.id);
   };
 
   return (
@@ -74,7 +87,7 @@ export const GalleryImageCard: React.FC<GalleryImageCardProps> = ({
         <ImageSerialNumber serialNumber={serial} className="top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <div className="absolute inset-0 bg-slate-100/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-5"></div>
         <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center space-x-2">
-          <Button variant="outline" size="icon" className="h-8 w-8 bg-black/200 hover:bg-black/200 border-slate-700 hover:border-slate-200 text-slate-700 hover:text-white hover:scale-110 active:scale-95 transition-transform" onClick={(e) => { e.stopPropagation(); handleDownload(img.imageUrl, img.id); }} title="Descargar imagen">
+          <Button variant="outline" size="icon" className="h-8 w-8 bg-black/200 hover:bg-black/200 border-slate-700 hover:border-slate-200 text-slate-700 hover:text-white hover:scale-110 active:scale-95 transition-transform" onClick={handleDownloadClick} title="Descargar imagen">
             <DownloadIcon className="h-2 w-2 p-2" />
           </Button>
           <DropdownMenu>
@@ -84,9 +97,9 @@ export const GalleryImageCard: React.FC<GalleryImageCardProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="bg-gray-600 border-transparent text-slate-200">
-              <DropdownMenuItem onClick={() => handleSocialShare('twitter', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><TwitterIcon className="h-4 w-4 p-2.5 mr-2 fill-current text-slate-200"/>Compartir en X</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleSocialShare('facebook', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><FacebookIcon className="h-4 p-2 w-4 mr-2 fill-current text-slate-200"/>Compartir en Facebook</DropdownMenuItem>              
-              <DropdownMenuItem onClick={handleCopyClick} className="hover:!bg-gray-700 focus:!bg-gray-700">
+              <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'twitter')} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer"><TwitterIcon className="h-4 w-4 p-2.5 mr-2 fill-current text-slate-200"/>Compartir en X</DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'facebook')} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer"><FacebookIcon className="h-4 p-2 w-4 mr-2 fill-current text-slate-200"/>Compartir en Facebook</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleCopyClick} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer">
                 {isCopied ? <CheckIcon className="h-4 w-4 p-2 mr-2 text-green-400"/> : <CopyIcon className="h-4 w-4 p-2 mr-2 text-slate-200"/>}
                 {isCopied ? '¡Copiado!' : 'Copiar Enlace'}
               </DropdownMenuItem>
