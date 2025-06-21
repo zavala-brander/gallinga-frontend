@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
         { url: '/icon.svg', type: 'image/svg+xml' },
         { url: '/favicon.ico', type: 'image/x-icon', sizes: 'any' }
       ],
-      apple: '/apple-icon.png',
+      apple: '/assets/images/apple-icon.png',
     },
     alternates: {
       canonical: '/',
@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: 'Historias de la Gallinga (App de Pura Kasaka)',
       images: [
         {
-          url: '/og-image-gallinga.png',
+          url: '/assets/images/og-image-gallinga.png',
           width: 1200,
           height: 630,
           alt: 'Brujilda la Gallina en la App Historias de la Gallinga de Pura Kasaka',
@@ -52,7 +52,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title: "Historias de la Gallinga: Crea con IA | Pura Kasaka",
       description: "Participa en la creación colaborativa de la historia de Brujilda la Gallina.",
-      images: [`${APP_BASE_URL}/og-image-gallinga.png`],
+      images: [`${APP_BASE_URL}/assets/images/og-image-gallinga.png`],
       creator: '@PuraKasaka',
     },
   };
@@ -83,7 +83,7 @@ export default function RootLayout({
             "name": "Pura Kasaka",
             "alternateName": "Gallinero de Animación",
             "url": PURAKASAKA_URL,
-            "logo": "https://purakasaka.com/wp-content/uploads/2023/10/logo-purakasaka-original.svg",
+            "logo": "https://purakasaka.com/wp-content/uploads/2025/06/logo-purakasaka-original.svg",
             "description": "Pura Kasaka es un estudio creativo especializado en servicios de animación para storytelling. Utiliza tecnología, incluyendo IA, para desarrollar proyectos para redes sociales y sitios web.",
             "sameAs": [
               "https://www.instagram.com/pura.kasaka/",

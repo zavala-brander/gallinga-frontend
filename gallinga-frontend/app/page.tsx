@@ -414,12 +414,12 @@ export default function HomePage() {
           "operatingSystem": "Web",
           "description": "Es una aplicación web diseñada como un motor de engagement comunitario. Los usuarios continúan una historia en curso, proponiendo texto que la IA interpreta para generar una imagen.",
           "featureList": [
-            "Generación de imágenes por IA a partir de prompts de texto.", // Keep as is
+              "Generación de imágenes por IA a partir de prompts de texto.",
             "Creación colaborativa de historias visuales.", // Keep as is
             "Galería de escenas creadas por la comunidad.", // Keep as is
             "Sistema de calificación de imágenes."
           ],
-          "screenshot": `${APP_BASE_URL}/screenshot-gallinga.jpg`,
+            "screenshot": `${APP_BASE_URL}/assets/images/screenshot-gallinga.jpg`,
           "creator": {
             "@type": "Organization",
             "@id": `${PURAKASAKA_URL}#organization`
