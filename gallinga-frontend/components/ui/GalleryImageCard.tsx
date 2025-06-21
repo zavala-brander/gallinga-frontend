@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, MouseEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -68,48 +69,52 @@ export const GalleryImageCard: React.FC<GalleryImageCardProps> = ({
       className="bg-black dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden group flex flex-col hover:shadow-xl transition-shadow duration-300 animate__animated animate__fadeInUp animate__faster h-full"
       style={{ animationDelay: `${index * 50}ms` }} // Staggered animation
     >
-      <div className="aspect-[3/2] w-full overflow-hidden relative rounded-t-md group">
-        {!isLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center bg-slate-200 dark:bg-gray-700 animate-pulse">
-                {/* Podrías poner un spinner pequeño aquí o dejarlo como un placeholder de color */}
-            </div>
-        )}
-        <Image
-          src={img.imageUrl}
-          alt={img.prompt}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16vw"
-          className={`object-cover group-hover:scale-105 transition-all duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
-          priority={index < 12} // Prioridad a las primeras ~12 imágenes para LCP
-          onLoad={() => setIsLoaded(true)}
-          onError={() => setIsLoaded(true)} // Para ocultar placeholder si hay error
-        />
-        <ImageSerialNumber serialNumber={serial} className="top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="absolute inset-0 bg-slate-100/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-5"></div>
-        <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center space-x-2">
-          <Button variant="outline" size="icon" className="h-8 w-8 bg-black/200 hover:bg-black/200 border-slate-700 hover:border-slate-200 text-slate-700 hover:text-white hover:scale-110 active:scale-95 transition-transform" onClick={handleDownloadClick} title="Descargar imagen">
-            <DownloadIcon className="h-2 w-2 p-2" />
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="h-8 w-8 bg-black/200 hover:bg-black/20 border-slate-700 hover:border-slate-200 text-slate-700 hover:text-white hover:scale-110 active:scale-95 transition-transform" onClick={(e) => e.stopPropagation()} title="Compartir historia">
-                <ShareIcon className="h-2 w-2 p-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="bg-gray-600 border-transparent text-slate-200">
-              <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'twitter')} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer"><TwitterIcon className="h-4 w-4 p-2.5 mr-2 fill-current text-slate-200"/>Compartir en X</DropdownMenuItem>
-              <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'facebook')} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer"><FacebookIcon className="h-4 p-2 w-4 mr-2 fill-current text-slate-200"/>Compartir en Facebook</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleCopyClick} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer">
-                {isCopied ? <CheckIcon className="h-4 w-4 p-2 mr-2 text-green-400"/> : <CopyIcon className="h-4 w-4 p-2 mr-2 text-slate-200"/>}
-                {isCopied ? '¡Copiado!' : 'Copiar Enlace'}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+      <Link href={`/gallery/${img.id}`} className="block cursor-pointer">
+        <div className="aspect-[3/2] w-full overflow-hidden relative rounded-t-md">
+          {!isLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-200 dark:bg-gray-700 animate-pulse">
+                  {/* Podrías poner un spinner pequeño aquí o dejarlo como un placeholder de color */}
+              </div>
+          )}
+          <Image
+            src={img.imageUrl}
+            alt={img.prompt}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16vw"
+            className={`object-cover group-hover:scale-105 transition-all duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+            priority={index < 12} // Prioridad a las primeras ~12 imágenes para LCP
+            onLoad={() => setIsLoaded(true)}
+            onError={() => setIsLoaded(true)} // Para ocultar placeholder si hay error
+          />
+          <ImageSerialNumber serialNumber={serial} className="top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-slate-100/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-5"></div>
+          <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center space-x-2">
+            <Button variant="outline" size="icon" className="h-8 w-8 bg-black/200 hover:bg-black/200 border-slate-700 hover:border-slate-200 text-slate-700 hover:text-white hover:scale-110 active:scale-95 transition-transform" onClick={handleDownloadClick} title="Descargar imagen">
+              <DownloadIcon className="h-2 w-2 p-2" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="h-8 w-8 bg-black/200 hover:bg-black/20 border-slate-700 hover:border-slate-200 text-slate-700 hover:text-white hover:scale-110 active:scale-95 transition-transform" onClick={(e) => e.stopPropagation()} title="Compartir historia">
+                  <ShareIcon className="h-2 w-2 p-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="bg-gray-600 border-transparent text-slate-200">
+                <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'twitter')} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer"><TwitterIcon className="h-4 w-4 p-2.5 mr-2 fill-current text-slate-200"/>Compartir en X</DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'facebook')} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer"><FacebookIcon className="h-4 p-2 w-4 mr-2 fill-current text-slate-200"/>Compartir en Facebook</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleCopyClick} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer">
+                  {isCopied ? <CheckIcon className="h-4 w-4 p-2 mr-2 text-green-400"/> : <CopyIcon className="h-4 w-4 p-2 mr-2 text-slate-200"/>}
+                  {isCopied ? '¡Copiado!' : 'Copiar Enlace'}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-      </div>
+      </Link>
       <div className="p-3 flex-grow flex flex-col justify-between">
         <div className="space-y-1 text-sm">
-          <h3 className="font-semibold text-slate-200 dark:text-slate-200 line-clamp-1">{img.creatorName}</h3>
+          <Link href={`/gallery/${img.id}`} className="cursor-pointer">
+            <h3 className="font-semibold text-slate-200 dark:text-slate-200 line-clamp-1 hover:text-primary dark:hover:text-primary-light transition-colors">{img.creatorName}</h3>
+          </Link>
           <p className="text-slate-700 dark:text-slate-700 line-clamp-2 text-sm">{img.prompt}</p>
         </div>
         <div className="mt-2">

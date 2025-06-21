@@ -487,7 +487,7 @@ export default function HomePage() {
 
       <main className="flex-grow flex flex-col items-center justify-center p-4 pt-20 pb-60 md:pb-52">
           {isLoading && story.length === 0 ? ( <LoadingGiphy title="loading animation" className="w-48 h-48 relative mb-4" /> ) : currentChapter ? (
-              <div className="w-full max-w-md md:max-w-sm text-center space-y-3" >
+              <div className="w-full max-w-sm md:max-w-lg text-center space-y-3" >
                   <div {...swipeHandlers} className="relative aspect-square bg-slate-200 dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden group cursor-grab active:cursor-grabbing" tabIndex={0}>
                       <div className="absolute top-2 left-2 right-2 z-10 flex justify-between items-start">
                         <div className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-auto">
@@ -556,7 +556,7 @@ export default function HomePage() {
                       <p className="text-sm italic">"{currentChapter.prompt}"</p>
                       <p className="text-xs font-semibold mt-1 opacity-70">por {currentChapter.creatorName}</p>
                   </div>
-                  <div className="flex justify-center items-center gap-2 md:gap-4 text-slate-200 dark:text-slate-400">
+                  <div className="hidden md:flex justify-center items-center gap-2 md:gap-4 text-slate-200 dark:text-slate-400">
                       <Button variant="ghost" size="icon" onClick={() => navigate('last')} title="Retrocede" className="hover:scale-110 active:scale-95 transition-transform duration-150"><SkipBackIcon className="w-5 h-5" /></Button>
                       <Button variant="ghost" size="icon" onClick={() => navigate('prev')} title="Retrocede" className="hover:scale-110 active:scale-95 transition-transform duration-150"><ChevronLeftIcon className="w-6 h-6" /></Button>
                       <Button variant="ghost" size="icon" className="w-12 h-12 hover:scale-110 active:scale-95 transition-transform duration-150" onClick={handlePlayback} title={isPlaying ? "Pausar" : "Reproducir"}>{isPlaying ? <PauseIcon className="w-6 h-6"/> : <PlayIcon className="w-6 h-6"/>}</Button>

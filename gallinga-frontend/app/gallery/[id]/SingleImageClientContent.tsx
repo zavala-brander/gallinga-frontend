@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, MouseEvent } from 'react';
+import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import Lottie from "lottie-react";
@@ -114,26 +115,28 @@ export default function SingleImageClientContent({ image: initialImage }: Single
               <div className="flex items-center space-x-2">
                 <StarRating rating={image.averageRating || 0} onRate={(newRating) => handleRateImage(image.id, newRating)} size={5} readonly={ratingImageId === image.id} showRatingCount={true} ratingCount={image.ratingCount || 0} />
               </div>
-              <div className="flex flex-wrap gap-2 pt-4">
-                <Button onClick={() => handleDownload(image.imageUrl, image.id)} variant="outline" className="flex-grow md:flex-grow-0"><DownloadIcon className="h-4 w-4 mr-2 p-1 text-slate-200" />Descargar</Button>
+              <div className="pt-4">
+                <Button asChild className="w-full bg-slate-200 text-slate-50 hover:bg-slate-100 font-bold py-6 text-lg transition-colors duration-200">
+                  <Link href={`/?prompt=${encodeURIComponent(image.prompt)}`}>
+                    Continuar la historia desde aquí
+                  </Link>
+                </Button>
+              </div>
+              <div className="flex items-center justify-center gap-4 pt-4">
+                <Button onClick={() => handleDownload(image.imageUrl, image.id)} variant="outline" className="bg-transparent border-slate-200 text-slate-200 hover:border-slate-100 hover:text-slate-100 hover:bg-transparent"><DownloadIcon className="w-4 h-4 mr-2" />Descargar</Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex-grow md:flex-grow-0"><ShareIcon className="h-4 w-4 mr-2 p-1 text-slate-200" />Compartir</Button>
+                    <Button variant="outline" className="bg-transparent border-slate-200 text-slate-200 hover:border-slate-100 hover:text-slate-100 hover:bg-transparent"><ShareIcon className="w-4 h-4 mr-2" />Compartir</Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-gray-800 border-transparent text-slate-50">
-                    <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'twitter')}><TwitterIcon className="h-4 w-4 mr-2 p-1" />Compartir en X</DropdownMenuItem>
-                    <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'facebook')}><FacebookIcon className="h-4 w-4 mr-2 p-1" />Compartir en Facebook</DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleCopyClick} className="hover:!bg-gray-700 focus:!bg-gray-700">
-                      {isCopied ? <CheckIcon className="h-4 w-4 mr-2 p-1 text-green-400" /> : <CopyIcon className="h-4 w-4 mr-2 p-1" />}
+                    <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'twitter')} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer"><TwitterIcon className="h-4 w-4 mr-2 p-2.5 fill-current text-slate-50" />Compartir en X</DropdownMenuItem>
+                    <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'facebook')} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer"><FacebookIcon className="h-4 w-4 mr-2 p-2 text-slate-50" />Compartir en Facebook</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleCopyClick} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer">
+                      {isCopied ? <CheckIcon className="h-4 w-4 mr-2 p-2 text-green-400" /> : <CopyIcon className="h-4 w-4 mr-2 p-2 text-slate-50" />}
                       {isCopied ? '¡Copiado!' : 'Copiar Enlace'}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
-              <div className="pt-4">
-                <Link href={`/?prompt=${encodeURIComponent(image.prompt)}`} passHref>
-                  <Button className="w-full bg-slate-50 hover:bg-primary/90 text-slate-200"><SparklesIcon className="h-4 w-4 mr-2" />Continuar la historia desde aquí</Button>
-                </Link>
               </div>
             </div>
           </div>

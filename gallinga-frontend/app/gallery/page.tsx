@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
+import { Metadata } from 'next';
 import { usePathname } from 'next/navigation';
 import Lottie from "lottie-react";
 import gallingaLogo from "@/assets/lottie/gallinga-logo.json"; // Actualizado para la nueva ruta
@@ -321,8 +322,8 @@ export default function GalleryPage() {
                     <Input 
                         placeholder="Buscar por prompt o autor..."
                         value={searchTerm} 
-                        onChange={(e) => setSearchTerm(e.target.value)} 
-                        className="pl-9 text-sm h-9 w-full bg-transparent"
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-9 text-sm h-9 w-full bg-slate-500"
                     />
                 </div>
 
@@ -330,7 +331,7 @@ export default function GalleryPage() {
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                     <span className="text-sm font-medium text-slate-200  dark:text-slate-200" >Ordenar:</span>
                     <Select onValueChange={(value: 'newest' | 'oldest' | 'popular') => setSortOrder(value)} defaultValue="newest">
-                        <SelectTrigger className="w-full sm:w-auto md:w-[130px] h-9 text-sm border border-slate-200 rounded-md">
+                        <SelectTrigger className="w-full sm:w-auto md:w-[130px] h-9 text-sm border border-slate-200 rounded-md bg-slate-500">
                             <SelectValue placeholder="Ordenar por" />
                         </SelectTrigger>
                         <SelectContent className="bg-slate-200 dark:bg-gray-800 ">
@@ -345,7 +346,7 @@ export default function GalleryPage() {
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                     <span className="text-sm font-medium text-slate-200 dark:text-slate-200">User:</span>
                     <Select onValueChange={(value) => setSelectedInstagramUser(value === "all" ? null : value)} value={selectedInstagramUser || "all"}>
-                        <SelectTrigger className="w-full sm:w-auto md:w-[130px] h-9 text-sm border border-slate-200 rounded-md">
+                        <SelectTrigger className="w-full sm:w-auto md:w-[130px] h-9 text-sm border border-slate-200 rounded-md bg-slate-500">
                             <SelectValue placeholder="Todos" /> 
                         </SelectTrigger>
                         <SelectContent className="bg-slate-200 dark:bg-gray-800">
@@ -368,15 +369,14 @@ export default function GalleryPage() {
         ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
                 {filteredAndSortedImages.map((img, index) => (
-                    <Link key={img.id} href={`/gallery/${img.id}`} passHref>
-                        <GalleryImageCard 
-                            img={img} 
-                            index={index} 
-                            stableSortedImagesForSerialNumber={stableSortedImagesForSerialNumber}
-                            onRate={handleRateImage}
-                            ratingImageId={ratingImageId}
-                        />
-                    </Link>
+                    <GalleryImageCard 
+                        key={img.id}
+                        img={img} 
+                        index={index} 
+                        stableSortedImagesForSerialNumber={stableSortedImagesForSerialNumber}
+                        onRate={handleRateImage}
+                        ratingImageId={ratingImageId}
+                    />
                 ))}
             </div>
         )}
