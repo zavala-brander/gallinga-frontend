@@ -85,11 +85,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 }
 
 // Componente de Página (ahora un Componente de Servidor asíncrono)
-type SingleImagePageProps = {
-  params: { id: string };
-};
-
-export default async function SingleImagePage({ params }: SingleImagePageProps) {
+export default async function SingleImagePage({ params }: { params: { id: string } }) {
   const image = await getImageData(params.id);
 
   // Si la imagen no se encuentra, Next.js renderizará el archivo not-found.tsx más cercano
