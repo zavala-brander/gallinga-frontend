@@ -113,20 +113,28 @@ export default function SingleImageClientContent({ image: initialImage }: Single
                 <p className="text-xs text-slate-200">Publicado el {creationDate}</p>
               </div>
               <div className="flex items-center space-x-2">
-                <StarRating rating={image.averageRating || 0} onRate={(newRating) => handleRateImage(image.id, newRating)} size={5} readonly={ratingImageId === image.id} showRatingCount={true} ratingCount={image.ratingCount || 0} />
+                <StarRating
+                  rating={image.averageRating || 0}
+                  onRate={(newRating) => handleRateImage(image.id, newRating)}
+                  size={5}
+                  readonly={ratingImageId === image.id}
+                  showRatingCount={true}
+                  ratingCount={image.ratingCount || 0}
+                  filledStarClasses="text-slate-200 fill-slate-200"
+                />
               </div>
               <div className="pt-4">
-                <Button asChild className="w-full bg-slate-200 text-slate-50 hover:bg-slate-100 font-bold py-6 text-lg transition-colors duration-200">
+                <Button asChild className="w-full bg-slate-200 text-slate-50 hover:bg-slate-100 transition-colors duration-200">
                   <Link href={`/?prompt=${encodeURIComponent(image.prompt)}`}>
                     Continuar la historia desde aquí
                   </Link>
                 </Button>
               </div>
-              <div className="flex items-center justify-center gap-4 pt-4">
-                <Button onClick={() => handleDownload(image.imageUrl, image.id)} variant="outline" className="bg-transparent border-slate-200 text-slate-200 hover:border-slate-100 hover:text-slate-100 hover:bg-transparent"><DownloadIcon className="w-4 h-4 mr-2" />Descargar</Button>
+              <div className="flex w-full items-center gap-4 pt-4">
+                <Button onClick={() => handleDownload(image.imageUrl, image.id)} variant="outline" className="flex-1 bg-transparent border-slate-200 text-slate-200 hover:border-slate-100 hover:text-slate-100 hover:bg-transparent"><DownloadIcon className="w-4 h-4 mr-2 p-1" />Descargar</Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="bg-transparent border-slate-200 text-slate-200 hover:border-slate-100 hover:text-slate-100 hover:bg-transparent"><ShareIcon className="w-4 h-4 mr-2" />Compartir</Button>
+                    <Button variant="outline" className="flex-1 bg-transparent border-slate-200 text-slate-200 hover:border-slate-100 hover:text-slate-100 hover:bg-transparent"><ShareIcon className="w-4 h-4 mr-2 p-1" />Compartir</Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-gray-800 border-transparent text-slate-50">
                     <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'twitter')} className="hover:!bg-gray-700 focus:!bg-gray-700 cursor-pointer"><TwitterIcon className="h-4 w-4 mr-2 p-2.5 fill-current text-slate-50" />Compartir en X</DropdownMenuItem>
