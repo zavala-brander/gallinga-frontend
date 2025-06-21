@@ -15,6 +15,3 @@ export const DELETE_ENDPOINT = `${API_BASE_URL}/eliminarCreacionGallinga`;
 export const STATUS_ENDPOINT_BASE = `${API_BASE_URL}/getGallingaJobStatus`;
 export const GALLERY_API_ENDPOINT = `${API_BASE_URL}/obtenerGaleria`;
 export const RATE_IMAGE_API_ENDPOINT = `${API_BASE_URL}/rateImageGallinga`;
-
-// El REQUEST_LIMIT también podría venir de una variable de entorno si necesitas configurarlo dinámicamente.
-export const REQUEST_LIMIT = parseInt(process.env.NEXT_PUBLIC_REQUEST_LIMIT || "2", 10);

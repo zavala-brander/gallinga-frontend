@@ -27,6 +27,29 @@ const storage = new Storage();
 const secretClient = new SecretManagerServiceClient();
 const translate = new Translate(); // Inicializar el cliente de Translation
 
+/**
+ * Middleware reutilizable para configurar las cabeceras CORS.
+ * Permite que tu frontend en Vercel y localhost puedan llamar a esta API.
+ * @param {import('express').Request} req El objeto de solicitud.
+ * @param {import('express').Response} res El objeto de respuesta.
+ */
+const enableCors = (req, res) => {
+  const allowedOrigins = [
+    PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
+    PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
+    PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
+    LOCALHOST_DEV_FRONTEND,
+    PRIMARY_ALLOWED_ORIGIN_PURAKASAKA,
+  ];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.set('Access-Control-Allow-Origin', origin);
+  }
+  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.set('Access-Control-Max-Age', '3600');
+};
+
 // --- GESTIÓN DE CLAVES ---
 let cachedApiKeys = null;
 async function getApiKeys() {
@@ -116,20 +139,7 @@ const leonardoProvider = {
 
 // --- FUNCIÓN PRINCIPAL DE GALLINGA ---
 functions.http('generarImagenGallinga', async (req, res) => {
-    const allowedOrigins = [
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        LOCALHOST_DEV_FRONTEND,
-        // PRIMARY_ALLOWED_ORIGIN_PURAKASAKA, // Descomenta si purakasaka.com también llamará a esta función
-    ];
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.set('Access-Control-Allow-Origin', origin);
-    }
-    res.set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.set('Access-Control-Max-Age', '3600');
+    enableCors(req, res);
 
     if (req.method === 'OPTIONS') {
         return res.status(204).send('');
@@ -290,19 +300,7 @@ functions.http('leonardoCallbackHandler', async (req, res) => {
 });
 
 functions.http('getGallingaJobStatus', async (req, res) => {
-    const allowedOrigins = [
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        LOCALHOST_DEV_FRONTEND,
-    ];
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) { 
-        res.set('Access-Control-Allow-Origin', origin); 
-    }
-    res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    res.set('Access-Control-Max-Age', '3600');
+    enableCors(req, res);
 
     if (req.method === 'OPTIONS') {
         return res.status(204).send('');
@@ -352,19 +350,7 @@ functions.http('getGallingaJobStatus', async (req, res) => {
 // --- FIN DE NUEVAS FUNCIONES ---
 
 functions.http('obtenerGaleria', async (req, res) => {
-    const allowedOrigins = [
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        LOCALHOST_DEV_FRONTEND,
-    ];
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) { 
-        res.set('Access-Control-Allow-Origin', origin); 
-    }
-    res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    res.set('Access-Control-Max-Age', '3600');
+    enableCors(req, res);
 
     if (req.method === 'OPTIONS') {
         return res.status(204).send('');
@@ -441,19 +427,7 @@ functions.http('obtenerGaleria', async (req, res) => {
 
 functions.http('finalizarCreacionGallinga', async (req, res) => {
     console.log('[INFO] [finalizarCreacionGallinga] Función invocada. Verificando CORS y método...');
-    const allowedOrigins = [
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        LOCALHOST_DEV_FRONTEND,
-    ];
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.set('Access-Control-Allow-Origin', origin);
-    }
-    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS'); // Ajustado a solo POST y OPTIONS
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    res.set('Access-Control-Max-Age', '3600');
+    enableCors(req, res);
 
     if (req.method === 'OPTIONS') {
         console.log('[INFO] [finalizarCreacionGallinga] Respondiendo a solicitud OPTIONS (pre-flight).');
@@ -524,19 +498,7 @@ functions.http('finalizarCreacionGallinga', async (req, res) => {
 
 functions.http('eliminarCreacionGallinga', async (req, res) => {
     console.log('[INFO] [eliminarCreacionGallinga] Función invocada. Verificando CORS y método...');
-    const allowedOrigins = [
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        LOCALHOST_DEV_FRONTEND,
-    ];
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.set('Access-Control-Allow-Origin', origin);
-    }
-    res.set('Access-Control-Allow-Methods', 'POST, DELETE, OPTIONS'); 
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    res.set('Access-Control-Max-Age', '3600');
+    enableCors(req, res);
 
     if (req.method === 'OPTIONS') {
         console.log('[INFO] [eliminarCreacionGallinga] Respondiendo a solicitud OPTIONS (pre-flight).');
@@ -588,21 +550,7 @@ functions.http('eliminarCreacionGallinga', async (req, res) => {
 
 functions.http('borrarTodoRastroImagen', async (req, res) => {
     console.log('[INFO] [borrarTodoRastroImagen] Función invocada. Verificando CORS y método...');
-    const allowedOrigins = [ // Esta función es sensible, sé muy restrictivo.
-        // PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP, // Solo si un admin logueado en la app puede hacerlo
-        // PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL, // No permitir desde Vercel directamente
-        // PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL, // No permitir desde Vercel directamente
-        // LOCALHOST_DEV_FRONTEND, // Solo para desarrollo si es estrictamente necesario
-    ];
-    const origin = req.headers.origin;
-    // Para uso interno desde terminal, CORS podría no ser estrictamente necesario si se llama directamente
-    // pero es buena práctica tenerlo por si se decide exponer de otra forma.
-    if (allowedOrigins.includes(origin)) {
-        res.set('Access-Control-Allow-Origin', origin);
-    }
-    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Permitir Authorization si se usa para el token
-    res.set('Access-Control-Max-Age', '3600');
+    enableCors(req, res); // Usamos el helper general, pero la seguridad real viene del token.
 
     if (req.method === 'OPTIONS') {
         console.log('[INFO] [borrarTodoRastroImagen] Respondiendo a solicitud OPTIONS.');
@@ -715,19 +663,7 @@ functions.http('borrarTodoRastroImagen', async (req, res) => {
 
 functions.http('rateImageGallinga', async (req, res) => {
     console.log('[INFO] [rateImageGallinga] Función invocada. Verificando CORS y método...');
-    const allowedOrigins = [
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
-        PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-        LOCALHOST_DEV_FRONTEND,
-    ];
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.set('Access-Control-Allow-Origin', origin);
-    }
-    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    res.set('Access-Control-Max-Age', '3600');
+    enableCors(req, res);
 
     if (req.method === 'OPTIONS') {
         console.log('[INFO] [rateImageGallinga] Respondiendo a solicitud OPTIONS.');
