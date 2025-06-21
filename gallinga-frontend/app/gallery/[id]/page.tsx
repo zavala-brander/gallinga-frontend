@@ -2,13 +2,10 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { GALLERY_API_ENDPOINT } from '@/lib/apiConstants';
+import { GALLERY_API_ENDPOINT, APP_BASE_URL } from '@/lib/apiConstants';
 import { StoryChapter } from '@/lib/types';
 import { getTimestampInSeconds } from '@/lib/utils';
-import { SingleImageClientContent } from './SingleImageClientContent'; // Nuevo componente cliente
-
-const APP_BASE_URL = 'https://gallinga.purakasaka.com';
-const PURAKASAKA_URL = 'https://purakasaka.com';
+import SingleImageClientContent from './SingleImageClientContent'; // Componente cliente
 
 // Función de obtención de datos optimizada para el servidor
 async function getImageData(id: string): Promise<StoryChapter | null> {

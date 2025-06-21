@@ -1,0 +1,12 @@
+# Allow all user agents
+User-agent: *
+Allow: /
+
+# Specifically allow AI crawlers
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+Sitemap: https://gallinga.purakasaka.com/sitemap.xml

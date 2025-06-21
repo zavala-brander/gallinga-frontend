@@ -12,15 +12,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { StarRating } from '@/components/ui/StarRating';
 import { DownloadIcon, ShareIcon, TwitterIcon, FacebookIcon, CopyIcon, ChevronLeftIcon, SparklesIcon, GalleryIcon } from '@/components/ui/icons';
 import gallingaLogo from "@/assets/lottie/gallinga-logo.json";
-import { RATE_IMAGE_API_ENDPOINT } from '@/lib/apiConstants';
-
-const APP_BASE_URL = 'https://gallinga.purakasaka.com';
+import { RATE_IMAGE_API_ENDPOINT, APP_BASE_URL } from '@/lib/apiConstants';
 
 interface SingleImageClientContentProps {
   image: StoryChapter;
 }
 
-export function SingleImageClientContent({ image: initialImage }: SingleImageClientContentProps) {
+export default function SingleImageClientContent({ image: initialImage }: SingleImageClientContentProps) {
   const [image, setImage] = useState(initialImage);
   const [ratingImageId, setRatingImageId] = useState<string | null>(null);
   const lottieAnimationData = useLottieThemer(gallingaLogo);

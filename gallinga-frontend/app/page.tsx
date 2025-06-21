@@ -26,13 +26,12 @@ import {
   DELETE_ENDPOINT,
   STATUS_ENDPOINT_BASE,
   RATE_IMAGE_API_ENDPOINT,
-  REQUEST_LIMIT
+  REQUEST_LIMIT,
+  APP_BASE_URL,
+  PURAKASAKA_URL
 } from '@/lib/apiConstants';
 import { instructionsContent, InstructionsLang } from '@/assets/instructionsContent'; // Importar el contenido de las instrucciones
 import { getTimestampInSeconds, handleDownload, handleSocialShare } from '@/lib/utils';
-
-const APP_BASE_URL = 'https://gallinga.purakasaka.com';
-const PURAKASAKA_URL = 'https://purakasaka.com';
 
 // Nuevo componente hijo para manejar la lógica de searchParams
 function PromptHandler({ setPromptForParent }: { setPromptForParent: (prompt: string) => void }) {

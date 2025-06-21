@@ -12,32 +12,34 @@ const inter = FontInter({ // Instantiate the Inter font
   display: 'swap',
 });
 
-const APP_BASE_URL = 'https://gallinga.purakasaka.com';
-const PURAKASAKA_URL = 'https://purakasaka.com';
+import { APP_BASE_URL, PURAKASAKA_URL } from '@/lib/apiConstants';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(APP_BASE_URL),
     title: {
-      default: "Historias de la Gallinga: Juego de Creatividad Colaborativa con IA | Pura Kasaka",
-      template: "%s | Historias de la Gallinga - Pura Kasaka", // Consistent with new default
+      default: "Historias de la Gallinga: Crea Cuentos con IA | Pura Kasaka",
+      template: "%s | Historias de la Gallinga - Pura Kasaka",
     },
-    description: "Juego web colaborativo de Pura Kasaka que utiliza IA para que los usuarios co-creen una historia animada, escena por escena.",
+    description: "Participa en la creación de una historia visual sin fin con Brujilda la Gallina. Genera imágenes con IA y colabora en esta aventura creativa de Pura Kasaka.",
     icons: {
-      // 'icon.svg' y 'favicon.ico' en la carpeta /app son detectados automáticamente.
-      apple: '/apple-icon.png', // Mantenemos esta línea si apple-icon.png está en /public
+      icon: [
+        { url: '/icon.svg', type: 'image/svg+xml' },
+        { url: '/favicon.ico', type: 'image/x-icon', sizes: 'any' }
+      ],
+      apple: '/apple-icon.png',
     },
     alternates: {
       canonical: '/',
     },
     openGraph: {
-      title: "Historias de la Gallinga: Cocrea la Historia de Brujilda la Gallina con IA",
-      description: "Únete a la comunidad y ayuda a escribir y visualizar la historia de Brujilda la Gallina usando IA. Un proyecto de Pura Kasaka.", // Refined description
+      title: "Historias de la Gallinga por Pura Kasaka",
+      description: "Únete a la comunidad y ayuda a escribir y visualizar la historia de Brujilda la Gallina usando IA. Un proyecto de Pura Kasaka.",
       url: APP_BASE_URL,
       siteName: 'Historias de la Gallinga (App de Pura Kasaka)',
       images: [
         {
-          url: '/og-image-gallinga.png', // Asegúrate de crear esta imagen
+          url: '/og-image-gallinga.png',
           width: 1200,
           height: 630,
           alt: 'Brujilda la Gallina en la App Historias de la Gallinga de Pura Kasaka',
@@ -48,10 +50,10 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: "Historias de la Gallinga: Crea con IA | Pura Kasaka", // Consistent with new default
-      description: "Participa en la creación colaborativa de la historia de Brujilda la Gallina.", // Consistent with new default
+      title: "Historias de la Gallinga: Crea con IA | Pura Kasaka",
+      description: "Participa en la creación colaborativa de la historia de Brujilda la Gallina.",
       images: [`${APP_BASE_URL}/og-image-gallinga.png`],
-      creator: '@PuraKasaka', // Tu usuario de X (Twitter)
+      creator: '@PuraKasaka',
     },
   };
 }
@@ -77,11 +79,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
-            "@id": `${PURAKASAKA_URL}#organization`,
+            "@id": `${PURAKASAKA_URL}#organization`, // ID único para tu organización
             "name": "Pura Kasaka",
-            "alternateName": "Gallinero de Animación", // Keep this as per refined entities
+            "alternateName": "Gallinero de Animación",
             "url": PURAKASAKA_URL,
-            "logo": `${PURAKASAKA_URL}/wp-content/uploads/2023/10/logo-purakasaka-original.svg`,
+            "logo": "https://purakasaka.com/wp-content/uploads/2023/10/logo-purakasaka-original.svg",
             "description": "Pura Kasaka es un estudio creativo especializado en servicios de animación para storytelling. Utiliza tecnología, incluyendo IA, para desarrollar proyectos para redes sociales y sitios web.",
             "sameAs": [
               "https://www.instagram.com/pura.kasaka/",
@@ -99,12 +101,13 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
+            "@id": APP_BASE_URL, // ID único para este sitio web
             "url": APP_BASE_URL,
-            "name": "Historias de la Gallinga (App de Pura Kasaka)", // More specific name
+            "name": "Historias de la Gallinga",
             "description": "Juego web colaborativo de Pura Kasaka que utiliza IA para que los usuarios co-creen una historia animada, escena por escena.",
             "publisher": {
               "@type": "Organization",
-              "@id": `${PURAKASAKA_URL}#organization`
+              "@id": `${PURAKASAKA_URL}#organization` // Referencia a la entidad Organization
             },
             "potentialAction": {
               "@type": "SearchAction",
