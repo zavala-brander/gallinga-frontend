@@ -8,14 +8,14 @@ const nextConfig = {
       script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com https://*.googletagmanager.com;
       worker-src 'self' blob:;
       style-src 'self' 'unsafe-inline';
-      img-src 'self' blob: data: https://storage.googleapis.com https://*.googleusercontent.com https://*.giphy.com;
+      img-src 'self' blob: data: https://storage.googleapis.com https://*.googleusercontent.com https://*.giphy.com https://cdn.leonardo.ai;
       font-src 'self';
       object-src 'none';
       base-uri 'self';
       form-action 'self';
       frame-ancestors 'none';
       frame-src 'self' https://giphy.com;
-      connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://europe-west1-gallinga-project.cloudfunctions.net https://europe-west1-branderproject.cloudfunctions.net https://api.leonardo.ai https://cloud.leonardo.ai https://va.vercel-scripts.com;
+      connect-src 'self' https://storage.googleapis.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://europe-west1-gallinga-project.cloudfunctions.net https://europe-west1-branderproject.cloudfunctions.net https://api.leonardo.ai https://cloud.leonardo.ai https://va.vercel-scripts.com;
       media-src 'self';
       upgrade-insecure-requests;
     `;
