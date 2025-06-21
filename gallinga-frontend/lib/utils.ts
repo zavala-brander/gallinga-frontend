@@ -53,19 +53,29 @@ export const handleDownload = async (imageUrl: string, id: string): Promise<void
   }
 };
 
-export const handleSocialShare = (platform: 'twitter' | 'facebook' | 'copy', promptText: string, pageUrl: string = "https://purakasaka.com/gallinga"): void => {
-  const text = encodeURIComponent(`¡Mira esta historia de una gallina que creé con IA en Gallinga! "${promptText}"`);
+export const handleSocialShare = (
+  platform: 'twitter' | 'facebook' | 'copy',
+  textToShare: string,
+  pageUrl: string
+): void => {
+  const encodedText = encodeURIComponent(textToShare);
   const encodedUrl = encodeURIComponent(pageUrl);
   let shareUrl = '';
 
-  if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${encodedUrl}`;
-  if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-  if (platform === 'copy') {
-    navigator.clipboard.writeText(`${text} ${pageUrl}`); // Usar pageUrl sin codificar para copiar
-    alert("¡Texto y enlace copiados al portapapeles!"); // Considera una notificación menos disruptiva
+  if (platform === 'twitter') {
+    shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+  } else if (platform === 'facebook') {
+    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+  } else if (platform === 'copy') {
+    const textToCopy = `${textToShare} ${pageUrl}`;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      alert("¡Enlace y texto copiados al portapapeles!");
+    }).catch(err => {
+      console.error('Error al copiar al portapapeles:', err);
+      alert("Error al copiar el enlace.");
+    });
     return;
   }
-  if (shareUrl) {
-    window.open(shareUrl, '_blank', 'noopener,noreferrer');
-  }
+
+  if (shareUrl) window.open(shareUrl, '_blank', 'noopener,noreferrer');
 };

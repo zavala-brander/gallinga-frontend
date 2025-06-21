@@ -67,7 +67,7 @@ export const GalleryImageCard: React.FC<GalleryImageCardProps> = ({
             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="bg-gray-600 border-transparent text-slate-200">
               <DropdownMenuItem onClick={() => handleSocialShare('twitter', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><TwitterIcon className="h-4 w-4 p-2.5 mr-2 fill-current text-slate-200"/>Compartir en X</DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleSocialShare('facebook', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><FacebookIcon className="h-4 p-2 w-4 mr-2 fill-current text-slate-200"/>Compartir en Facebook</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleSocialShare('copy', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga. ${APP_BASE_URL}/gallery/${img.id}`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><CopyIcon className="h-4 w-4 p-2 mr-2  text-slate-200"/>Copiar Enlace</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSocialShare('copy', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><CopyIcon className="h-4 w-4 p-2 mr-2  text-slate-200"/>Copiar Enlace</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
