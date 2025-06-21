@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { Metadata } from 'next';
 import { usePathname } from 'next/navigation';
 import Lottie from "lottie-react";
 import gallingaLogo from "@/assets/lottie/gallinga-logo.json"; // Actualizado para la nueva ruta
@@ -14,32 +13,9 @@ import { SearchIcon, GallingaHenIcon, LoadingSpinner } from "@/components/ui/ico
 import { useLottieThemer } from '@/hooks/useLottieThemer'; // Importar el custom hook
 import { StoryChapter as GalleryImage, TimestampValue } from '@/lib/types'; // Reutilizar el tipo StoryChapter y TimestampValue
 import { GalleryImageCard } from "@/components/ui/GalleryImageCard"; // Importar el nuevo componente de tarjeta
-import { LoadingGiphy } from '@/components/ui/LoadingGiphy'; // Importar LoadingGiphy
-import { GALLERY_API_ENDPOINT, RATE_IMAGE_API_ENDPOINT } from '@/lib/apiConstants';
+import { LoadingGiphy } from '@/components/ui/LoadingGiphy';
+import { GALLERY_API_ENDPOINT, RATE_IMAGE_API_ENDPOINT, APP_BASE_URL, PURAKASAKA_URL } from '@/lib/apiConstants';
 import { getTimestampInSeconds } from '@/lib/utils';
-
-const APP_BASE_URL = 'https://gallinga.purakasaka.com';
-const PURAKASAKA_URL = 'https://purakasaka.com';
-
-// GEO: Metadatos específicos para la página de la galería
-export async function generateMetadata(): Promise<Metadata> {
-  const pageUrl = `${APP_BASE_URL}/gallery`;
-  const pageTitle = "Galería de Historias de la Gallinga | Pura Kasaka";
-  const pageDescription = "Explora todas las escenas creadas por la comunidad para la historia de Brujilda la Gallina. Vota por tus favoritas y mira cómo evoluciona la narrativa.";
-
-  return {
-    title: pageTitle,
-    description: pageDescription,
-    alternates: {
-      canonical: pageUrl,
-    },
-    openGraph: {
-      title: pageTitle,
-      description: pageDescription,
-      url: pageUrl,
-    },
-  };
-}
 
 
 export default function GalleryPage() {

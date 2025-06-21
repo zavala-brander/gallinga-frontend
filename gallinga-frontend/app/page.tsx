@@ -34,26 +34,6 @@ import { getTimestampInSeconds, handleDownload, handleSocialShare } from '@/lib/
 const APP_BASE_URL = 'https://gallinga.purakasaka.com';
 const PURAKASAKA_URL = 'https://purakasaka.com';
 
-// GEO: Metadatos específicos para esta página
-export async function generateMetadata(): Promise<Metadata> {
-  const pageTitle = "Historias de la Gallinga: Cocrea la Historia de Brujilda la Gallina con IA";
-  const pageDescription = "Participa en la creación de una historia visual sin fin con Brujilda la Gallina. Escribe un prompt, genera una imagen con IA y continúa la narrativa. Un proyecto de Pura Kasaka."; // Refined description
-
-  return {
-    title: pageTitle,
-    description: pageDescription,
-    alternates: {
-      canonical: APP_BASE_URL,
-    },
-    openGraph: {
-      title: pageTitle,
-      description: pageDescription,
-      url: APP_BASE_URL,
-      type: 'website',
-    },
-  };
-}
-
 // Nuevo componente hijo para manejar la lógica de searchParams
 function PromptHandler({ setPromptForParent }: { setPromptForParent: (prompt: string) => void }) {
   const searchParams = useSearchParams();
