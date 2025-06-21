@@ -53,29 +53,38 @@ export const handleDownload = async (imageUrl: string, id: string): Promise<void
   }
 };
 
-export const handleSocialShare = (
+export const handleSocialShare = async (
   platform: 'twitter' | 'facebook' | 'copy',
   textToShare: string,
   pageUrl: string
-): void => {
-  const encodedText = encodeURIComponent(textToShare);
+): Promise<boolean> => {
   const encodedUrl = encodeURIComponent(pageUrl);
   let shareUrl = '';
 
   if (platform === 'twitter') {
+    const encodedText = encodeURIComponent(textToShare);
     shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
   } else if (platform === 'facebook') {
+    // Nota: El sharer.php de Facebook ignora mayormente el texto y se basa
+    // en las metaetiquetas Open Graph (OG) de la URL que se comparte.
+    // Es crucial que la página en `pageUrl` tenga `og:title`, `og:description`, etc.
     shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
   } else if (platform === 'copy') {
     const textToCopy = `${textToShare} ${pageUrl}`;
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      alert("¡Enlace y texto copiados al portapapeles!");
-    }).catch(err => {
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      // Éxito. El componente que llama a esta función puede ahora mostrar
+      // una notificación de "Copiado" en lugar de usar un alert.
+      return true;
+    } catch (err) {
       console.error('Error al copiar al portapapeles:', err);
-      alert("Error al copiar el enlace.");
-    });
-    return;
+      return false;
+    }
   }
 
-  if (shareUrl) window.open(shareUrl, '_blank', 'noopener,noreferrer');
+  if (shareUrl) {
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    return true;
+  }
+  return false;
 };

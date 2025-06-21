@@ -8,9 +8,9 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea"; // prettier-ignore
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"; // prettier-ignore
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"; // prettier-ignore
-import { LoadingSpinner, GalleryIcon, PlayIcon, PauseIcon, SkipBackIcon, SkipForwardIcon, ChevronLeftIcon, ChevronRightIcon, InfoIcon, UpArrow, EggIcon, DownloadIcon, ShareIcon, TwitterIcon, FacebookIcon, CopyIcon, StarIcon, CancelIcon, ApproveIcon } from "@/components/ui/icons";
+import { LoadingSpinner, GalleryIcon, PlayIcon, PauseIcon, SkipBackIcon, SkipForwardIcon, ChevronLeftIcon, ChevronRightIcon, InfoIcon, UpArrow, EggIcon, DownloadIcon, ShareIcon, TwitterIcon, FacebookIcon, CopyIcon, CheckIcon, StarIcon, CancelIcon, ApproveIcon } from "@/components/ui/icons";
 import gallingaLogo from "@/assets/lottie/gallinga-logo.json"; // Lottie animation data
 import { StarRating } from "@/components/ui/StarRating";
 import { useSwipeable } from "react-swipeable";
@@ -71,6 +71,7 @@ export default function HomePage() {
   const [isCurrentImageLoading, setIsCurrentImageLoading] = useState(true); // Estado para la carga de la imagen actual del carrusel
   const [prevImageUrlForEffect, setPrevImageUrlForEffect] = useState<string | null>(null); // Para el efecto de carga
   const [instructionsLang, setInstructionsLang] = useState<InstructionsLang>('es'); // Estado para el idioma del popup de instrucciones
+  const [isCopied, setIsCopied] = useState(false);
 
   const playbackInterval = useRef<NodeJS.Timeout | null>(null);
 
@@ -365,6 +366,24 @@ export default function HomePage() {
   //   console.log(`[RENDER] isCurrentImageLoading: ${isCurrentImageLoading}, currentChapter URL: ${currentChapter.imageUrl}`);
   // }
 
+  const handleCopyClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isCopied || !currentChapter) return;
+
+    const success = await handleSocialShare(
+      'copy',
+      `¡Mira mi Kasaka! "${currentChapter.prompt}" por ${currentChapter.creatorName} en Historias de la Gallinga.`,
+      `${APP_BASE_URL}/gallery/${currentChapter.id}`
+    );
+
+    if (success) {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2500); // Reset after 2.5 seconds
+    } else {
+      alert("Error al copiar el enlace."); // Fallback for rare cases
+    }
+  };
+
   return (
     <>
       {/* GEO: Schemas para WebApplication, WebPage y FAQPage */}
@@ -493,7 +512,10 @@ export default function HomePage() {
                           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="bg-gray-800 border-transparent text-slate-50" >
                             <DropdownMenuItem onClick={() => handleSocialShare('twitter', `¡Mira mi Kasaka! "${currentChapter.prompt}" por ${currentChapter.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${currentChapter.id}`)} className="hover:bg-gray-700 focus:bg-gray-700"><TwitterIcon className="h-4 w-4 mr-2 p-2.5 fill-current text-slate-50" />Compartir en X</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleSocialShare('facebook', `¡Mira mi Kasaka! "${currentChapter.prompt}" por ${currentChapter.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${currentChapter.id}`)} className="hover:bg-gray-700 focus:bg-gray-700"><FacebookIcon className="h-4 w-4 mr-2 p-2 text-slate-50" />Compartir en Facebook</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleSocialShare('copy', `¡Mira mi Kasaka! "${currentChapter.prompt}" por ${currentChapter.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${currentChapter.id}`)} className="hover:bg-gray-700 focus:bg-gray-700"><CopyIcon className="h-4 w-4 mr-2 p-2 text-slate-50" />Copiar Enlace</DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleCopyClick} className="hover:bg-gray-700 focus:bg-gray-700">
+                              {isCopied ? <CheckIcon className="h-4 w-4 mr-2 p-2 text-green-400"/> : <CopyIcon className="h-4 w-4 mr-2 p-2 text-slate-50"/>}
+                              {isCopied ? '¡Copiado!' : 'Copiar Enlace'}
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

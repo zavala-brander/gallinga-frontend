@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, MouseEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { DownloadIcon, ShareIcon, TwitterIcon, FacebookIcon, CopyIcon, UserIcon, PurakasakaIcon } from "@/components/ui/icons";
+import { DownloadIcon, ShareIcon, TwitterIcon, FacebookIcon, CopyIcon, UserIcon, PurakasakaIcon, CheckIcon } from "@/components/ui/icons";
 import { StarRating } from "@/components/ui/StarRating";
 import { ImageSerialNumber } from "@/components/ui/ImageSerialNumber";
 import { StoryChapter as GalleryImage } from '@/lib/types';
@@ -27,9 +27,28 @@ export const GalleryImageCard: React.FC<GalleryImageCardProps> = ({
   ratingImageId 
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const globalIndex = stableSortedImagesForSerialNumber.findIndex(sImg => sImg.id === img.id);
   const serial = globalIndex !== -1 ? `01-${String(globalIndex + 1).padStart(4, '0')}` : null;
+
+  const handleCopyClick = async (e: MouseEvent) => {
+    e.stopPropagation();
+    if (isCopied) return;
+
+    const success = await handleSocialShare(
+      'copy',
+      `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`,
+      `${APP_BASE_URL}/gallery/${img.id}`
+    );
+
+    if (success) {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2500); // Reset after 2.5 seconds
+    } else {
+      alert("Error al copiar el enlace."); // Fallback for rare cases
+    }
+  };
 
   return (
     <div
@@ -66,8 +85,11 @@ export const GalleryImageCard: React.FC<GalleryImageCardProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="bg-gray-600 border-transparent text-slate-200">
               <DropdownMenuItem onClick={() => handleSocialShare('twitter', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><TwitterIcon className="h-4 w-4 p-2.5 mr-2 fill-current text-slate-200"/>Compartir en X</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleSocialShare('facebook', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><FacebookIcon className="h-4 p-2 w-4 mr-2 fill-current text-slate-200"/>Compartir en Facebook</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleSocialShare('copy', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><CopyIcon className="h-4 w-4 p-2 mr-2  text-slate-200"/>Copiar Enlace</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSocialShare('facebook', `¡Mira mi Kasaka! "${img.prompt}" por ${img.creatorName} en Historias de la Gallinga.`, `${APP_BASE_URL}/gallery/${img.id}`)} className="hover:!bg-gray-700"><FacebookIcon className="h-4 p-2 w-4 mr-2 fill-current text-slate-200"/>Compartir en Facebook</DropdownMenuItem>              
+              <DropdownMenuItem onClick={handleCopyClick} className="hover:!bg-gray-700 focus:!bg-gray-700">
+                {isCopied ? <CheckIcon className="h-4 w-4 p-2 mr-2 text-green-400"/> : <CopyIcon className="h-4 w-4 p-2 mr-2 text-slate-200"/>}
+                {isCopied ? '¡Copiado!' : 'Copiar Enlace'}
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

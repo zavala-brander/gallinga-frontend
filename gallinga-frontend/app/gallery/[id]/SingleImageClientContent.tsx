@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Lottie from "lottie-react";
@@ -8,9 +8,9 @@ import { StoryChapter } from '@/lib/types';
 import { handleDownload, handleSocialShare, getTimestampInSeconds } from '@/lib/utils';
 import { useLottieThemer } from '@/hooks/useLottieThemer';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'; // Asegúrate de que estos componentes estén correctamente importados
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { StarRating } from '@/components/ui/StarRating';
-import { DownloadIcon, ShareIcon, TwitterIcon, FacebookIcon, CopyIcon, ChevronLeftIcon, SparklesIcon, GalleryIcon } from '@/components/ui/icons';
+import { DownloadIcon, ShareIcon, TwitterIcon, FacebookIcon, CopyIcon, CheckIcon, ChevronLeftIcon, SparklesIcon, GalleryIcon } from '@/components/ui/icons';
 import gallingaLogo from "@/assets/lottie/gallinga-logo.json";
 import { RATE_IMAGE_API_ENDPOINT, APP_BASE_URL } from '@/lib/apiConstants';
 
@@ -21,6 +21,7 @@ interface SingleImageClientContentProps {
 export default function SingleImageClientContent({ image: initialImage }: SingleImageClientContentProps) {
   const [image, setImage] = useState(initialImage);
   const [ratingImageId, setRatingImageId] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
   const lottieAnimationData = useLottieThemer(gallingaLogo);
 
   const creationDate = image.createdAt ? new Date(getTimestampInSeconds(image.createdAt) * 1000).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Fecha desconocida';
@@ -44,6 +45,24 @@ export default function SingleImageClientContent({ image: initialImage }: Single
       console.error("Error al calificar la imagen:", err.message);
     } finally {
       setRatingImageId(null);
+    }
+  };
+
+  const handleCopyClick = async (e: MouseEvent) => {
+    e.stopPropagation();
+    if (isCopied) return;
+
+    const success = await handleSocialShare(
+      'copy',
+      `¡Mira esta Kasaka! "${image.prompt}" por ${image.creatorName}`,
+      `${APP_BASE_URL}/gallery/${image.id}`
+    );
+
+    if (success) {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2500); // Reset after 2.5 seconds
+    } else {
+      alert("Error al copiar el enlace."); // Fallback
     }
   };
 
@@ -98,7 +117,10 @@ export default function SingleImageClientContent({ image: initialImage }: Single
                   <DropdownMenuContent align="end" className="bg-gray-800 border-transparent text-slate-50">
                     <DropdownMenuItem onClick={() => handleSocialShare('twitter', `¡Mira esta Kasaka! "${image.prompt}" por ${image.creatorName}`, `${APP_BASE_URL}/gallery/${image.id}`)}><TwitterIcon className="h-4 w-4 mr-2 p-1" />Compartir en X</DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleSocialShare('facebook', `¡Mira esta Kasaka! "${image.prompt}" por ${image.creatorName}`, `${APP_BASE_URL}/gallery/${image.id}`)}><FacebookIcon className="h-4 w-4 mr-2 p-1" />Compartir en Facebook</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleSocialShare('copy', `¡Mira esta Kasaka! "${image.prompt}" por ${image.creatorName}`, `${APP_BASE_URL}/gallery/${image.id}`)}><CopyIcon className="h-4 w-4 mr-2 p-1" />Copiar Enlace</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleCopyClick} className="hover:!bg-gray-700 focus:!bg-gray-700">
+                      {isCopied ? <CheckIcon className="h-4 w-4 mr-2 p-1 text-green-400" /> : <CopyIcon className="h-4 w-4 mr-2 p-1" />}
+                      {isCopied ? '¡Copiado!' : 'Copiar Enlace'}
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

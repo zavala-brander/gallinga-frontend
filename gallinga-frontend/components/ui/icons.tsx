@@ -17,6 +17,7 @@ import {
   Sparkles, // Añadir Sparkles
   XCircle,        // Para el icono de Cancelar/Eliminar
   CheckCircle2,   // Para el icono de Aprobar
+  Check,          // Para el icono de "Copiado"
   // Los siguientes ya los tienes como SVG personalizados, pero si quisieras usar lucide:
   // Image as LucideImage, // Para GalleryIcon
   // Search as LucideSearch, // Para SearchIcon
@@ -117,6 +118,7 @@ export const SparklesIcon = (props: SVGProps<SVGSVGElement>) => <Sparkles {...pr
 // --- Iconos para Acciones de Aprobación (usando lucide-react) ---
 export const CancelIcon = (props: SVGProps<SVGSVGElement>) => <XCircle {...props} />;
 export const ApproveIcon = (props: SVGProps<SVGSVGElement>) => <CheckCircle2 {...props} />;
+export const CheckIcon = (props: SVGProps<SVGSVGElement>) => <Check {...props} />;
 
 
 export function CopyIcon(props: SVGProps<SVGSVGElement>) {
