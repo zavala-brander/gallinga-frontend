@@ -81,19 +81,19 @@ export default function SingleImageClientContent({ image: initialImage }: Single
               />
             </div>
             <div className="flex flex-col justify-center space-y-4">
-              <p className="text-lg md:text-xl italic text-slate-300">"{image.prompt}"</p>
+              <p className="text-lg md:text-xl italic text-slate-200">"{image.prompt}"</p>
               <div>
                 <p className="text-sm font-semibold text-slate-200">Creado por: {image.creatorName}</p>
-                <p className="text-xs text-slate-400">Publicado el {creationDate}</p>
+                <p className="text-xs text-slate-200">Publicado el {creationDate}</p>
               </div>
               <div className="flex items-center space-x-2">
                 <StarRating rating={image.averageRating || 0} onRate={(newRating) => handleRateImage(image.id, newRating)} size={5} readonly={ratingImageId === image.id} showRatingCount={true} ratingCount={image.ratingCount || 0} />
               </div>
               <div className="flex flex-wrap gap-2 pt-4">
-                <Button onClick={() => handleDownload(image.imageUrl, image.id)} variant="outline" className="flex-grow md:flex-grow-0"><DownloadIcon className="h-4 w-4 mr-2" />Descargar</Button>
+                <Button onClick={() => handleDownload(image.imageUrl, image.id)} variant="outline" className="flex-grow md:flex-grow-0"><DownloadIcon className="h-4 w-4 mr-2 p-1 text-slate-200" />Descargar</Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex-grow md:flex-grow-0"><ShareIcon className="h-4 w-4 mr-2" />Compartir</Button>
+                    <Button variant="outline" className="flex-grow md:flex-grow-0"><ShareIcon className="h-4 w-4 mr-2 p-1 text-slate-200" />Compartir</Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-gray-800 border-transparent text-slate-50">
                     <DropdownMenuItem onClick={() => handleSocialShare('twitter', `¡Mira esta Kasaka! "${image.prompt}" por ${image.creatorName}`, `${APP_BASE_URL}/gallery/${image.id}`)}><TwitterIcon className="h-4 w-4 mr-2" />Compartir en X</DropdownMenuItem>
@@ -104,7 +104,7 @@ export default function SingleImageClientContent({ image: initialImage }: Single
               </div>
               <div className="pt-4">
                 <Link href={`/?prompt=${encodeURIComponent(image.prompt)}`} passHref>
-                  <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"><SparklesIcon className="h-4 w-4 mr-2" />Continuar la historia desde aquí</Button>
+                  <Button className="w-full bg-slate-50 hover:bg-primary/90 text-slate-200"><SparklesIcon className="h-4 w-4 mr-2" />Continuar la historia desde aquí</Button>
                 </Link>
               </div>
             </div>

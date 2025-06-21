@@ -706,8 +706,8 @@ export default function HomePage() {
                       <LoadingSpinner className="h-4 w-4 animate-spin" />
                     </motion.div>
                   ) : (
-                    <motion.span key="text-approve" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex items-center gap-1.5"> ¡Publicar Kasaka!
-                      <ApproveIcon className="h-4 w-4 p-1" /> Aprobado
+                    <motion.span key="text-approve" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex items-center gap-1.5"> 
+                      <ApproveIcon className="h-4 w-4 p-1" /> ¡Publicar Kasaka!
                     </motion.span>
                   )}
                 </AnimatePresence>

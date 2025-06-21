@@ -9,10 +9,8 @@ const crypto = require('crypto');
 // --- CONFIGURACIÓN PRINCIPAL ---
 const BUCKET_NAME = 'gallinga-images-gallinga-project';
 // Orígenes principales permitidos
-const PRIMARY_ALLOWED_ORIGIN_PURAKASAKA = 'https://purakasaka.com'; // Tu sitio principal
-const PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL = 'https://gallinga-story.vercel.app'; // Dominio Vercel principal
-const LATEST_PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL = 'https://gallinga-story-4p87hgdma-zavalas-projects.vercel.app'; // URL de preview de Vercel (desde logs)
-const PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL = 'https://gallinga-story-c601uxxor-zavalas-projects.vercel.app'; // Dominio Vercel preview específico
+const PRIMARY_ALLOWED_ORIGIN_PURAKASAKA = 'https://purakasaka.com'; // Dominio de la marca
+const PRIMARY_ALLOWED_ORIGIN_GALLINGa_STORY_VERCEL = 'https://gallinga-story.vercel.app'; // Dominio de producción en Vercel
 const PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP = 'https://gallinga.purakasaka.com'; // Tu nuevo subdominio para la app
 const LOCALHOST_DEV_FRONTEND = 'http://localhost:3000'; // Para desarrollo local del frontend
 
@@ -35,16 +33,21 @@ const translate = new Translate(); // Inicializar el cliente de Translation
  * @param {import('express').Response} res El objeto de respuesta.
  */
 const enableCors = (req, res) => {
-  const allowedOrigins = [
+  // Lista de orígenes primarios y fijos que siempre se permitirán.
+  const allowedPrimaryOrigins = [
     PRIMARY_ALLOWED_ORIGIN_GALLINGA_APP,
-    PRIMARY_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-    LATEST_PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
-    PREVIEW_ALLOWED_ORIGIN_GALLINGA_STORY_VERCEL,
+    PRIMARY_ALLOWED_ORIGIN_GALLINGa_STORY_VERCEL,
     LOCALHOST_DEV_FRONTEND,
     PRIMARY_ALLOWED_ORIGIN_PURAKASAKA,
   ];
+
+  // Expresión regular para permitir CUALQUIER URL de preview de Vercel para este proyecto.
+  const vercelPreviewRegex = /^https:\/\/gallinga-story-.*-zavalas-projects\.vercel\.app$/;
+
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
+
+  // Permitir si el origen está en la lista primaria O si coincide con el patrón de preview de Vercel.
+  if (allowedPrimaryOrigins.includes(origin) || (origin && vercelPreviewRegex.test(origin))) {
     res.set('Access-Control-Allow-Origin', origin);
   }
   res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE');
