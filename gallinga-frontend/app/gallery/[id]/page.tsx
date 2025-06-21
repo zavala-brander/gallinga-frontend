@@ -7,6 +7,11 @@ import { StoryChapter } from '@/lib/types';
 import { getTimestampInSeconds } from '@/lib/utils';
 import SingleImageClientContent from './SingleImageClientContent'; // Componente cliente
 
+// Define explícitamente el tipo para las props de la página.
+type Props = {
+  params: { id: string };
+};
+
 // Función de obtención de datos optimizada para el servidor
 async function getImageData(id: string): Promise<StoryChapter | null> {
   try {
@@ -38,7 +43,7 @@ async function getImageData(id: string): Promise<StoryChapter | null> {
 }
 
 // Generación de metadatos dinámicos (se ejecuta en el servidor)
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const image = await getImageData(params.id);
 
   if (!image) {
@@ -85,7 +90,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 }
 
 // Componente de Página (ahora un Componente de Servidor asíncrono)
-export default async function SingleImagePage({ params }: { params: { id: string } }) {
+export default async function SingleImagePage({ params }: Props) {
   const image = await getImageData(params.id);
 
   // Si la imagen no se encuentra, Next.js renderizará el archivo not-found.tsx más cercano
