@@ -123,7 +123,7 @@ export default function SingleImageClientContent({ image: initialImage }: Single
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="fixed top-0 left-0 right-0 z-30 flex justify-between items-center p-2 md:p-4 dark:bg-black/50">
-        <a href="https://purakasaka.com" target="_blank" rel="noopener noreferrer" className="w-12 h-12 hover:scale-110 active:scale-95 transition-transform duration-150">
+        <a href="https://purakasaka.com/proyecto/historias-de-la-gallinga/" target="_blank" rel="noopener noreferrer" className="w-12 h-12 hover:scale-110 active:scale-95 transition-transform duration-150">
           <Lottie animationData={lottieAnimationData} loop={true} />
         </a>
         <Link href="/gallery" className="text-slate-200 dark:text-slate-200 hover:text-slate-600 dark:hover:text-primary-light hover:scale-110 transition-transform rounded-md focus:outline-none focus:ring-2 focus:ring-primary" aria-label="Volver a la galería">

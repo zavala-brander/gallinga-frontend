@@ -473,7 +473,7 @@ export default function HomePage() {
       </Suspense>
       <div className="flex flex-col h-screen bg-background text-foreground"> {/* Restaurado con bg-background y text-foreground semánticos */}
       <header className="fixed top-0 left-0 right-0 z-30 flex justify-between items-center p-2 md:p-4 dark:bg-black/50 ">
-        <a href="https://purakasaka.com" target="_blank" rel="noopener noreferrer" className="w-12 h-12 hover:scale-110 active:scale-95 transition-transform duration-150">
+        <a href="https://purakasaka.com/proyecto/historias-de-la-gallinga/" target="_blank" rel="noopener noreferrer" className="w-12 h-12 hover:scale-110 active:scale-95 transition-transform duration-150">
           <Lottie animationData={lottieAnimationData} loop={true} />
         </a>
         <div className="flex items-center gap-2 ">
@@ -614,9 +614,9 @@ export default function HomePage() {
               </DialogTrigger>
               <DialogContent className="max-w-md text-blue-600 dark:text-blue-600  bg-slate-700 dark:bg-gray-900" showCloseButton={true}> {/* Asegúrate de que showCloseButton sea true si quieres el botón de cerrar por defecto */}
                 <DialogHeader className="items-center">
-                  <div className="w-15 h-15" id="instructions-dialog-title">
+                  <a href="https://purakasaka.com/proyecto/historias-de-la-gallinga/" target="_blank" rel="noopener noreferrer" className="block w-20 h-20 hover:scale-105 transition-transform" aria-label="Conoce el proyecto Historias de la Gallinga">
                     <Lottie animationData={lottieAnimationData} loop={true} />
-                  </div>
+                  </a>
                   <DialogTitle>{instructionsContent[instructionsLang].title}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm space-y-4 p-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-slate-800">
@@ -647,6 +647,16 @@ export default function HomePage() {
                   {instructionsContent[instructionsLang].outro && (
                     <p className="mt-6 pt-3 border-0 border-slate-600/0 dark:border-gray-700 font-semibold text-center text-blue-600 dark:text-blue-600">
                       {instructionsContent[instructionsLang].outro}
+                    </p>
+                  )}
+                  {instructionsContent[instructionsLang].projectLinkText && (
+                    <p className="mt-4 text-center">
+                      <a
+                        href={instructionsContent[instructionsLang].projectUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-400 hover:text-blue-300 hover:underline font-semibold"
+                      >{instructionsContent[instructionsLang].projectLinkText}</a>
                     </p>
                   )}
                 </div>

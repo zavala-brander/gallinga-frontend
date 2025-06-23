@@ -288,7 +288,7 @@ export default function GalleryPage() {
       />
       <div className="w-full min-h-screen bg-background text-foreground">
       <header className="fixed top-0 left-0 right-0 z-30 flex justify-between items-center p-2 md:p-4 dark:bg-black/50 ">
-        <a href="https://purakasaka.com" target="_blank" rel="noopener noreferrer" className="w-12 h-12 hover:scale-110 transition-transform">
+        <a href="https://purakasaka.com/proyecto/historias-de-la-gallinga/" target="_blank" rel="noopener noreferrer" className="w-12 h-12 hover:scale-110 transition-transform">
           <Lottie animationData={lottieAnimationData} loop={true} />
         </a>
         <Link

@@ -20,9 +20,11 @@ interface LanguageInstructions {
   title: string;
   steps: InstructionStep[];
   outro: string;
+  projectLinkText: string;
+  projectUrl: string;
 }
 
-export const instructionsContent = {
+export const instructionsContent: { [key: string]: LanguageInstructions } = {
   es: {
     title: "Continúa la Historia de Brujilda la Gallina",
     steps: [
@@ -61,7 +63,9 @@ export const instructionsContent = {
         text: "Visita la galería para ver las demás escenas creadas para la historia, califica, descarga y comparte. Las mejor puntuadas serán las elegidas para el corte final."
       }
     ],
-    outro: "¡Cocinemos juntos una buena historia!"
+    outro: "¡Cocinemos juntos una buena historia!",
+    projectLinkText: "Conoce el proyecto",
+    projectUrl: "https://purakasaka.com/proyecto/historias-de-la-gallinga/"
   },
   en: {
     title: "The Story of Brujilda the Hen Continues",
@@ -101,7 +105,9 @@ export const instructionsContent = {
         text: "Visit the gallery to see the other scenes created for the story, rate, download, and share. The highest-rated scenes will be chosen for the final cut."
       }
     ],
-    outro: "Let's cook up a great story together!"
+    outro: "Let's cook up a great story together!",
+    projectLinkText: "Learn about the project",
+    projectUrl: "https://purakasaka.com/proyecto/historias-de-la-gallinga/"
   }
 };
 
