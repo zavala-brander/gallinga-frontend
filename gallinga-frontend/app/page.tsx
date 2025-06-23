@@ -572,7 +572,7 @@ export default function HomePage() {
       <footer className="fixed bottom-0 left-0 right-0 z-20 p-4">
         <div className="w-full max-w-2xl mx-auto space-y-2">
           {remainingAttempts !== null && (
-            <div className="flex items-center justify-start text-xs text-slate-200 dark:text-slate-400 mb-2 px-2">
+            <div className="inline-flex items-center justify-start text-xs text-slate-200 dark:text-slate-400 mb-2 px-3 py-1 bg-primary/10 dark:bg-black/30 backdrop-blur-sm rounded-full">
               <EggIcon className="h-4 w-4 mr-1" /> {/* Asegúrate de que EggIcon esté importado */}
               <span>{remainingAttempts} {remainingAttempts === 1 ? "huevo / egg" : "huevos / eggs"}</span>
             </div>
