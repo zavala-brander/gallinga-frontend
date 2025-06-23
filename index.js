@@ -2,7 +2,6 @@ const functions = require('@google-cloud/functions-framework');
 const { Firestore, FieldValue } = require('@google-cloud/firestore');
 const { Storage } = require('@google-cloud/storage');
 const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
-const { Translate } = require('@google-cloud/translate').v2; // Importar el cliente de Translation
 const axios = require('axios');
 const crypto = require('crypto');
 
@@ -24,7 +23,6 @@ const ACTIVE_PROVIDER = 'LEONARDO';
 const firestore = new Firestore();
 const storage = new Storage();
 const secretClient = new SecretManagerServiceClient();
-const translate = new Translate(); // Inicializar el cliente de Translation
 
 /**
  * Middleware reutilizable para configurar las cabeceras CORS.
@@ -68,6 +66,9 @@ async function getApiKeys() {
     if (!cachedApiKeys.ADMIN_TOKEN) {
         throw new Error("Falta ADMIN_TOKEN en los secretos.");
     }
+    if (!cachedApiKeys.GEMINI_API_KEY) { // Nueva clave para Gemini
+        throw new Error("Falta GEMINI_API_KEY en los secretos.");
+    }
     if (!cachedApiKeys.LEONARDO_WEBHOOK_SHARED_KEY) { // Nueva clave para validar callbacks de Leonardo
         throw new Error("Falta LEONARDO_WEBHOOK_SHARED_KEY en los secretos.");
     }
@@ -101,6 +102,80 @@ async function checkRequestLimit(ipHash) {
     return { allowed: true, remaining: REQUEST_LIMIT - (data.count + 1) };
 }
 
+// --- NUEVA FUNCIÓN: INTÉRPRETE DE PROMPTS CON GEMINI ---
+/**
+ * Usa Gemini para interpretar el prompt del usuario y convertirlo en un prompt efectivo para Leonardo.
+ * @param {string} userPrompt El prompt original del usuario.
+ * @param {string} geminiApiKey La clave de API para Gemini.
+ * @returns {Promise<{status: 'success' | 'error', refined_prompt_for_leonardo?: string, feedback_for_user?: string}>} Un objeto con el resultado.
+ */
+async function refinePromptWithGemini(userPrompt, geminiApiKey) {
+    console.log(`[INFO] [GEMINI] Iniciando refinamiento de prompt para: "${userPrompt}"`);
+
+    const geminiPrompt = `
+### Rol y Personalidad ###
+Eres "Director Creativo IA", un experto en interpretar texto de usuarios para generar prompts visuales para un modelo de IA de imágenes como Leonardo. Eres bilingüe (español-inglés) y un maestro en descifrar jergas, metáforas y dialectos para extraer la intención visual. Tu tono es amigable, creativo y servicial.
+
+### Contexto del Proyecto ###
+Estás trabajando en una aplicación llamada "Historias de la Gallinga". El personaje principal, que DEBE aparecer y ser el protagonista en CADA imagen, es "Brujilda, una gallina blanca con sombrero de bruja" (in English: "a white hen wearing a witch hat"). Los usuarios escriben una continuación para una historia, y tu trabajo es convertir ese texto en un prompt de imagen espectacular.
+
+### Tarea Principal ###
+Recibirás un texto de un usuario en español. Tu misión es analizarlo y generar un prompt optimizado en INGLÉS para el modelo de IA de imágenes.
+
+### Proceso de Pensamiento (Chain of Thought) ###
+1.  **Analiza el Input del Usuario:** Lee cuidadosamente el siguiente texto: "${userPrompt}".
+2.  **Identifica la Esencia Visual:** ¿Cuál es la acción principal? ¿El escenario? ¿Los objetos clave? ¿El estado de ánimo?
+3.  **Decodifica el Lenguaje:** Si el usuario usa jerga (ej. "está bacán"), metáforas (ej. "llueven sapos y culebras"), o expresiones idiomáticas (ej. "la gallina está que trina"), tradúcelo a su significado visual literal. "Está que trina" no es cantar, es estar furiosa. "Llueven sapos y culebras" es una tormenta muy fuerte.
+4.  **Construye la Escena:** Redacta una descripción clara y visual de la escena en INGLÉS.
+5.  **Integra al Personaje Principal:** Asegúrate de que "a white hen wearing a witch hat" sea el sujeto principal de la acción que describiste. El prompt debe centrarse en ella.
+6.  **Valida el Contenido:** ¿El prompt describe una escena visualmente coherente y es seguro y apropiado? Si pide algo fuera de tema (un coche, un perro), es un error.
+
+### Formato de Salida Obligatorio (JSON) ###
+Tu respuesta DEBE ser un objeto JSON válido, sin texto adicional antes o después.
+
+*   **Si el análisis es exitoso:**
+    \`\`\`json
+    {
+      "status": "success",
+      "refined_prompt_for_leonardo": "A clear, descriptive, and visually rich prompt in English featuring 'a white hen wearing a witch hat' as the main character."
+    }
+    \`\`\`
+
+*   **Si el input del usuario es imposible de interpretar, demasiado abstracto, o fuera de tema:**
+    \`\`\`json
+    {
+      "status": "error",
+      "feedback_for_user": "Una explicación amigable en ESPAÑOL de por qué no se pudo procesar el texto, con 1 o 2 ejemplos de buenos prompts. Por ejemplo: 'No logré entender la escena que quieres crear. Intenta describir algo más visual, como por ejemplo: \\'la gallina explora una cueva oscura con una antorcha\\' o \\'la gallina vuela sobre un pueblo en su escoba mágica\\''."
+    }
+    \`\`\`
+`;
+
+    try {
+        const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${geminiApiKey}`,
+            { contents: [{ parts: [{ text: geminiPrompt }] }] },
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+
+        const rawResponse = response.data.candidates[0].content.parts[0].text;
+        // Limpiar la respuesta para extraer solo el JSON
+        const jsonResponse = rawResponse.replace(/```json\n/g, '').replace(/```/g, '').trim();
+        console.log(`[INFO] [GEMINI] Respuesta JSON recibida y parseada.`);
+        const parsedJson = JSON.parse(jsonResponse);
+
+        // Validar que la estructura del JSON sea la esperada
+        if (!parsedJson.status || (parsedJson.status === 'success' && !parsedJson.refined_prompt_for_leonardo) || (parsedJson.status === 'error' && !parsedJson.feedback_for_user)) {
+            console.error('[ERROR] [GEMINI] La respuesta JSON de Gemini tiene un formato inesperado:', parsedJson);
+            throw new Error("El intérprete creativo (IA) devolvió una respuesta con formato incorrecto.");
+        }
+        return parsedJson;
+
+    } catch (geminiError) {
+        console.error(`[ERROR] [GEMINI] Fallo al contactar o parsear la respuesta de Gemini.`, geminiError.response ? geminiError.response.data : geminiError.message);
+        throw new Error("El intérprete creativo (IA) no está disponible en este momento.");
+    }
+}
+
 // --- PROVEEDOR DE IA: LEONARDO (CON PROMPT SECRETO) ---
 const leonardoProvider = {
     generateImage: async (prompt, apiKey) => {
@@ -108,8 +183,7 @@ const leonardoProvider = {
         // El sondeo se elimina. Leonardo notificará vía webhook.
         console.log(`[INFO] [LEONARDO] Iniciando generación (modo webhook) con modelo Flux Dev (Creative Style)`);
         
-        const FIXED_PROMPT_PREFIX = "a white hen wearing a witch hat, ";
-        const apiPrompt = `photorealistic, cinematic, dynamic action scene, high detail. The scene is based on this short story: ${FIXED_PROMPT_PREFIX}${prompt}`;
+        const apiPrompt = `photorealistic, cinematic, dynamic action scene, high detail. The scene is based on this short story: ${prompt}`;
         
         const negativePrompt = "text, watermark, deformed, blurry, ugly, duplicate, morbid, mutilated, out of frame, cartoon, 3d, painting, illustration";
 
@@ -165,33 +239,30 @@ functions.http('generarImagenGallinga', async (req, res) => {
         }
         const apiKeys = await getApiKeys();
 
-        // --- TRADUCCIÓN DEL PROMPT ---
-        let promptForLeonardo = userPrompt; // Por defecto, usar el prompt original
-        try {
-            console.log(`[INFO] [TRANSLATE] Prompt original para traducir: "${userPrompt}"`);
-            // Traducir al inglés ('en'). La API detectará automáticamente el idioma de origen.
-            const [translation] = await translate.translate(userPrompt, 'en');
-            promptForLeonardo = translation;
-            console.log(`[INFO] [TRANSLATE] Prompt traducido al inglés para Leonardo AI: "${promptForLeonardo}"`);
-        } catch (translateError) {
-            console.error(`[ERROR] [TRANSLATE] Fallo al traducir el prompt: ${translateError.message}. Se usará el prompt original para Leonardo AI.`, translateError);
-            // Considera si quieres notificar al usuario o simplemente proceder con el prompt original.
-            // Por ahora, se procede con el original para no interrumpir el flujo principal.
+        // --- INTERPRETACIÓN Y REFINAMIENTO DE PROMPT CON GEMINI ---
+        const geminiResult = await refinePromptWithGemini(userPrompt, apiKeys.GEMINI_API_KEY);
+
+        if (geminiResult.status === 'error') {
+            console.warn(`[WARN] [GEMINI] Prompt rechazado. Feedback: ${geminiResult.feedback_for_user}`);
+            // No descontamos un intento si el prompt es inválido.
+            await firestore.collection('requestLimitsGallinga').doc(ipHash).update({ count: FieldValue.increment(-1) });
+            return res.status(400).json({ error: geminiResult.feedback_for_user, remainingAttempts: limitCheck.remaining + 1 });
         }
-        // --- FIN TRADUCCIÓN ---
+
+        const promptForLeonardo = geminiResult.refined_prompt_for_leonardo;
+        console.log(`[INFO] [GEMINI] Prompt refinado para Leonardo: "${promptForLeonardo}"`);
 
         // Llama al proveedor de Leonardo, que ahora solo inicia y devuelve el ID
         const { leonardoGenerationId } = await leonardoProvider.generateImage(promptForLeonardo, apiKeys.LEONARDO_API_KEY);
 
-        // Guardar el trabajo pendiente en Firestore
+        // Guardar el trabajo pendiente en Firestore, incluyendo ambos prompts
         const jobRef = firestore.collection('gallingaImageJobs').doc(leonardoGenerationId);
-        const ipHashForJob = req.ip ? crypto.createHash('sha256').update(req.ip).digest('hex') : 'unknown';
         await jobRef.set({
             leonardoGenerationId: leonardoGenerationId,
             status: 'PENDING', // Estados podrían ser: PENDING, COMPLETE, FAILED
             originalUserPrompt: userPrompt,
             translatedPrompt: promptForLeonardo,
-            ipHash: ipHashForJob, 
+            ipHash: ipHash, // Reutilizar el hash ya calculado para el rate limit
             createdAt: FieldValue.serverTimestamp(),
             updatedAt: FieldValue.serverTimestamp()
         });
