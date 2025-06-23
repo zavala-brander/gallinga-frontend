@@ -609,7 +609,7 @@ export default function HomePage() {
           <div className="text-center">
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-xs text-slate-400 hover:bg-slate-500/70 active:bg-slate-50/20 transition-colors">
+                <Button variant="ghost" size="sm" className="text-xs text-slate-400 hover:bg-slate-500/70 active:bg-slate-50/20 transition-colors bg-primary/10 dark:bg-black/30 backdrop-blur-sm rounded-full">
                   <InfoIcon className="h-3 w-3 mr-1 p-1"/>
                   Leer Info / Read Info
                 </Button>
