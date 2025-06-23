@@ -51,7 +51,9 @@ function PromptHandler({ setPromptForParent }: { setPromptForParent: (prompt: st
   return null; // Este componente no renderiza UI directamente
 }
 
-const REQUEST_LIMIT = 3; // Default value, matches the GALLINGA_REQUEST_LIMIT env var
+// Considera obtener REQUEST_LIMIT del backend o de una variable de entorno para consistencia.
+// Por ahora, se mantiene en 3 como se observa en tu código, pero es crucial que coincida con el backend.
+const REQUEST_LIMIT = 3; 
 
 export default function HomePage() {
   const [prompt, setPrompt] = useState("");
