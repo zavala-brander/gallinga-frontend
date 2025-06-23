@@ -655,7 +655,7 @@ export default function HomePage() {
                         href={instructionsContent[instructionsLang].projectUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-400 hover:text-blue-300 hover:underline font-semibold"
+                        className="text-blue-600 dark:text-blue-600 hover:text-blue-300 hover:underline font-semibold"
                       >{instructionsContent[instructionsLang].projectLinkText}</a>
                     </p>
                   )}
