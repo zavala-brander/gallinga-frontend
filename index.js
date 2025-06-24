@@ -19,9 +19,6 @@ const REQUEST_LIMIT = parseInt(process.env.GALLINGA_REQUEST_LIMIT, 10) || 2;
 // --- INTERRUPTOR DE PROVEEDOR DE IA ---
 const ACTIVE_PROVIDER = 'LEONARDO'; 
 
-// --- INTERRUPTOR PARA MEJORA DE CONTINUIDAD ---
-const ENABLE_CONTEXTUAL_PROMPT_ENHANCEMENT = true; // ¡NUEVO! Ponlo en 'false' para desactivar la lógica de continuidad.
-
 // --- Clientes ---
 const firestore = new Firestore();
 const storage = new Storage();
@@ -110,19 +107,17 @@ async function checkRequestLimit(ipHash) {
  * Usa Gemini para interpretar el prompt del usuario y convertirlo en un prompt efectivo para Leonardo.
  * @param {string} userPrompt El prompt original del usuario.
  * @param {string} geminiApiKey La clave de API para Gemini.
- * @param {string|null} previousPrompt El prompt de la imagen anterior en la historia, para contexto.
  * @returns {Promise<{status: 'success' | 'error', refined_prompt_for_leonardo?: string, feedback_for_user?: string}>} Un objeto con el resultado.
  */
-async function refinePromptWithGemini(userPrompt, previousPrompt, geminiApiKey) {
+async function refinePromptWithGemini(userPrompt, geminiApiKey) {
     console.log(`[INFO] [GEMINI] Iniciando refinamiento de prompt para: "${userPrompt}"`);
-    if (previousPrompt) console.log(`[INFO] [GEMINI] Con contexto de prompt anterior: "${previousPrompt}"`);
 
     const geminiPrompt = `
 ### Rol y Personalidad ###
 Eres "Director Creativo IA", un experto en interpretar texto de usuarios para generar prompts visuales para un modelo de IA de imágenes como Leonardo. Eres bilingüe (español-inglés) y un maestro en descifrar jergas, metáforas y dialectos para extraer la intención visual. Tu tono es amigable, creativo y servicial.
 
 ### Contexto del Proyecto ###
-Estás trabajando en una aplicación llamada "Historias de la Gallinga". El personaje principal, que DEBE aparecer y ser el protagonista en CADA imagen, es "Brujilda, una gallina blanca con sombrero de bruja" (in English: "a white hen wearing a witch hat"). Los usuarios escriben una continuación para una historia, y tu trabajo es convertir ese texto en un prompt de imagen espectacular, manteniendo la continuidad visual cuando sea necesario.
+Estás trabajando en una aplicación llamada "Historias de la Gallinga". El personaje principal, que DEBE aparecer y ser el protagonista en CADA imagen, es "Brujilda, una gallina blanca con sombrero de bruja" (in English: "a white hen wearing a witch hat"). Los usuarios escriben una continuación para una historia, y tu trabajo es convertir ese texto en un prompt de imagen espectacular.
 
 ### Tarea Principal ###
 Recibirás un texto de un usuario en español. Tu misión es analizarlo y generar un prompt optimizado en INGLÉS para el modelo de IA de imágenes.
@@ -130,16 +125,10 @@ Recibirás un texto de un usuario en español. Tu misión es analizarlo y genera
 ### Proceso de Pensamiento (Chain of Thought) ###
 1.  **Analiza el Input del Usuario:** Lee cuidadosamente el siguiente texto: "${userPrompt}".
 2.  **Identifica la Esencia Visual:** ¿Cuál es la acción principal? ¿El escenario? ¿Los objetos clave? ¿El estado de ánimo?
-3.  **Analiza el Contexto Anterior (si existe):** Lee el prompt de la escena anterior: "${previousPrompt || 'No hay escena anterior.'}".
-4.  **Decide sobre la Continuidad:**
-    *   **¿El nuevo prompt ("${userPrompt}") es una continuación directa o una descripción de un elemento del prompt anterior?** Por ejemplo, si el anterior era "...jaula de oro con huevos azules" y el nuevo es "los huevos brillaban", la respuesta es SÍ.
-    *   **¿El nuevo prompt introduce una escena completamente nueva e independiente?** Por ejemplo, si el anterior era "...en un bosque oscuro" y el nuevo es "nadando en mares revueltos", la respuesta es SÍ, es una escena nueva.
-5.  **Construye la Escena (con o sin continuidad):**
-    *   **SI HAY CONTINUIDAD:** Fusiona la descripción visual clave del prompt anterior con la nueva acción. Ejemplo: si el anterior es "La gallina mapuche más vieja cuidaba la jaula de oro que contenía los huevos azules" y el nuevo es "Huevos que nadie sabía de dónde provenían", tu prompt en inglés debe describir la escena de los huevos azules dentro de la jaula de oro, quizás con un aire de misterio. El prompt refinado podría ser: "A mysterious close-up of glowing blue eggs resting inside an intricate golden cage, the white hen with a witch hat is looking at them with a puzzled expression".
-    *   **SI NO HAY CONTINUIDAD (escena nueva):** Ignora completamente el prompt anterior y céntrate solo en traducir la nueva escena ("${userPrompt}") a un prompt visualmente rico en inglés.
-6.  **Decodifica el Lenguaje:** Si el usuario usa jerga (ej. "está bacán"), metáforas (ej. "llueven sapos y culebras"), o expresiones idiomáticas (ej. "la gallina está que trina"), tradúcelo a su significado visual literal. "Está que trina" no es cantar, es estar furiosa.
-7.  **Integra al Personaje Principal:** Asegúrate de que "a white hen wearing a witch hat" sea el sujeto principal de la acción que describiste. El prompt debe centrarse en ella.
-8.  **Valida el Contenido:** ¿El prompt describe una escena visualmente coherente y es seguro y apropiado? Si pide algo fuera de tema (un coche, un perro), es un error.
+3.  **Decodifica el Lenguaje:** Si el usuario usa jerga (ej. "está bacán"), metáforas (ej. "llueven sapos y culebras"), o expresiones idiomáticas (ej. "la gallina está que trina"), tradúcelo a su significado visual literal. "Está que trina" no es cantar, es estar furiosa. "Llueven sapos y culebras" es una tormenta muy fuerte.
+4.  **Construye la Escena:** Redacta una descripción clara y visual de la escena en INGLÉS.
+5.  **Integra al Personaje Principal:** Asegúrate de que "a white hen wearing a witch hat" sea el sujeto principal de la acción que describiste. El prompt debe centrarse en ella.
+6.  **Valida el Contenido:** ¿El prompt describe una escena visualmente coherente y es seguro y apropiado? Si pide algo fuera de tema (un coche, un perro), es un error.
 
 ### Formato de Salida Obligatorio (JSON) ###
 Tu respuesta DEBE ser un objeto JSON válido, sin texto adicional antes o después.
@@ -250,23 +239,8 @@ functions.http('generarImagenGallinga', async (req, res) => {
         }
         const apiKeys = await getApiKeys();
 
-        // --- OBTENER CONTEXTO DE LA HISTORIA ANTERIOR (NUEVO) ---
-        let previousPrompt = null;
-        if (ENABLE_CONTEXTUAL_PROMPT_ENHANCEMENT) {
-            try {
-                const lastImageQuery = firestore.collection('gallinga_gallery')
-                    .orderBy('createdAt', 'desc')
-                    .limit(1);
-                const snapshot = await lastImageQuery.get();
-                if (!snapshot.empty) {
-                    previousPrompt = snapshot.docs[0].data().prompt;
-                }
-            } catch (firestoreError) {
-                console.warn("[WARN] No se pudo obtener el prompt anterior. Se procederá sin contexto.", firestoreError.message);
-            }
-        }
         // --- INTERPRETACIÓN Y REFINAMIENTO DE PROMPT CON GEMINI ---
-        const geminiResult = await refinePromptWithGemini(userPrompt, previousPrompt, apiKeys.GEMINI_API_KEY);
+        const geminiResult = await refinePromptWithGemini(userPrompt, apiKeys.GEMINI_API_KEY);
 
         if (geminiResult.status === 'error') {
             console.warn(`[WARN] [GEMINI] Prompt rechazado. Feedback: ${geminiResult.feedback_for_user}`);
@@ -815,3 +789,4 @@ functions.http('rateImageGallinga', async (req, res) => {
         res.status(error.message === 'Documento no encontrado.' ? 404 : 500).json({ error: 'Error al guardar la calificación.', details: error.message });
     }
 });
+
