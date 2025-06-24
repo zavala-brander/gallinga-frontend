@@ -72,7 +72,7 @@ export default function HomePage() {
   const [ratingImageId, setRatingImageId] = useState<string | null>(null);
   const [isCurrentImageLoading, setIsCurrentImageLoading] = useState(true); // Estado para la carga de la imagen actual del carrusel
   const [prevImageUrlForEffect, setPrevImageUrlForEffect] = useState<string | null>(null); // Para el efecto de carga
-  const [instructionsLang, setInstructionsLang] = useState<InstructionsLang>('es'); // Estado para el idioma del popup de instrucciones
+  const [instructionsLang, setInstructionsLang] = useState<InstructionsLang>('es'); // Estado para el idioma del popup de instrucciones 
   const [isCopied, setIsCopied] = useState(false);
 
   const playbackInterval = useRef<NodeJS.Timeout | null>(null);
@@ -400,6 +400,34 @@ export default function HomePage() {
     handleDownload(currentChapter.imageUrl, currentChapter.id);
   };
 
+  // New handlers for app-wide sharing
+  const [isAppCopied, setIsAppCopied] = useState(false);
+
+  const handleAppSharePlatformClick = (e: React.MouseEvent, platform: 'twitter' | 'facebook') => {
+    e.preventDefault();
+    e.stopPropagation();
+    const shareText = "¡Crea tu propia historia visual con IA en Historias de la Gallinga! Un juego colaborativo de Pura Kasaka.";
+    handleSocialShare(platform, shareText, APP_BASE_URL);
+  };
+
+  const handleAppCopyClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isAppCopied) return;
+
+    const shareText = "¡Crea tu propia historia visual con IA en Historias de la Gallinga! Un juego colaborativo de Pura Kasaka.";
+    const success = await handleSocialShare('copy', shareText, APP_BASE_URL);
+
+    if (success) {
+      setIsAppCopied(true);
+      setTimeout(() => setIsAppCopied(false), 2500);
+    } else {
+      // Fallback for rare cases where copy fails (e.g., not in a secure context)
+      alert("Error al copiar el enlace de la aplicación.");
+    }
+  };
+
+
   return (
     <>
       {/* GEO: Schemas para WebApplication, WebPage y FAQPage */}
@@ -479,6 +507,37 @@ export default function HomePage() {
           <Lottie animationData={lottieAnimationData} loop={true} />
         </a>
         <div className="flex items-center gap-2 ">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  title="Compartir aplicación"
+                  className="text-slate-200 dark:text-slate-200 hover:text-slate-600 dark:hover:text-primary-light hover:scale-110 transition-transform rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <ShareIcon className="h-5 w-5 " />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="bg-gray-800 border-transparent text-slate-50">
+                <DropdownMenuItem onClick={(e) => handleAppSharePlatformClick(e, 'twitter')} className="hover:bg-gray-700 focus:bg-gray-700 cursor-pointer">
+                  <TwitterIcon className="h-4 w-4 mr-2 p-2.5 fill-current text-slate-50" />
+                  Compartir en X
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => handleAppSharePlatformClick(e, 'facebook')} className="hover:bg-gray-700 focus:bg-gray-700 cursor-pointer">
+                  <FacebookIcon className="h-4 w-4 mr-2 p-2 text-slate-50" />
+                  Compartir en Facebook
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleAppCopyClick} className="hover:bg-gray-700 focus:bg-gray-700 cursor-pointer">
+                  {isAppCopied ? (
+                    <CheckIcon className="h-4 w-4 mr-2 p-2 text-green-400" />
+                  ) : (
+                    <CopyIcon className="h-4 w-4 mr-2 p-2 text-slate-50" />
+                  )}
+                  {isAppCopied ? '¡Copiado!' : 'Copiar Enlace'}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Link href="/gallery">
               <Button variant="ghost" size="icon" title="Galería" className="text-slate-200 dark:text-slate-200 hover:text-slate-600 dark:hover:text-primary-light hover:scale-110 transition-transform rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                 <GalleryIcon className="h-5 w-5 "/>
@@ -489,8 +548,8 @@ export default function HomePage() {
 
       <main className="flex-grow flex flex-col items-center justify-center p-4 pt-20 pb-60 md:pb-52">
           {isLoading && story.length === 0 ? ( <LoadingGiphy title="loading animation" className="w-48 h-48 relative mb-4" /> ) : currentChapter ? (
-              <div className="w-full max-w-sm md:max-w-lg text-center space-y-3" >
-                  <div {...swipeHandlers} className="relative aspect-square bg-slate-200 dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden group cursor-grab active:cursor-grabbing" tabIndex={0}>
+              <div className="w-full max-w-sm md:max-w-xs text-center space-y-3" >
+                  <div {...swipeHandlers} className="relative aspect-square bg-slate-200 dark:bg-slate-200 rounded-2xl shadow-xl overflow-hidden group cursor-grab active:cursor-grabbing" tabIndex={0}>
                       <div className="absolute top-2 left-2 right-2 z-10 flex justify-between items-start">
                         <div className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-auto">
                           <StarRating
@@ -506,7 +565,7 @@ export default function HomePage() {
                           size="icon"
                           onClick={handleDownloadClick}
                           title="Descargar imagen"
-                          className="h-9 w-9 bg-slate-200 dark:bg-gray-800 hover:bg-slate-100 border-slate-400 hover:border-slate-200 text-slate-800 dark:text-slate-200 hover:text-white hover:scale-110 active:scale-95 transition-transform duration-150"
+                          className="h-9 w-9 bg-slate-200 dark:bg-slate-200 hover:bg-slate-100 border-slate-400 hover:border-slate-200 text-slate-800 dark:text-slate-200 hover:text-white hover:scale-110 active:scale-95 transition-transform duration-150"
                         >
                           <DownloadIcon className="h-4 w-4 p-2" />
                         </Button>
@@ -517,7 +576,7 @@ export default function HomePage() {
                               size="icon"
                                                               onClick={(e: React.MouseEvent) => e.stopPropagation()}
                               title="Compartir historia"
-                              className="h-9 w-9 bg-slate-200 dark:bg-gray-800 hover:bg-slate-100 border-slate-400 hover:border-slate-200 text-slate-800 dark:text-slate-200 hover:text-white hover:scale-110 active:scale-95 transition-transform duration-150"
+                              className="h-9 w-9 bg-slate-200 dark:bg-slate-200 hover:bg-slate-100 border-slate-400 hover:border-slate-200 text-slate-800 dark:text-slate-200 hover:text-white hover:scale-110 active:scale-95 transition-transform duration-150"
                             >
                               <ShareIcon className="h-4 w-4 p-2" />
                             </Button>
@@ -525,7 +584,7 @@ export default function HomePage() {
                           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="bg-gray-800 border-transparent text-slate-50" >
                             <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'twitter')} className="hover:bg-gray-700 focus:bg-gray-700 cursor-pointer"><TwitterIcon className="h-4 w-4 mr-2 p-2.5 fill-current text-slate-50" />Compartir en X</DropdownMenuItem>
                             <DropdownMenuItem onClick={(e) => handleSharePlatformClick(e, 'facebook')} className="hover:bg-gray-700 focus:bg-gray-700 cursor-pointer"><FacebookIcon className="h-4 w-4 mr-2 p-2 text-slate-50" />Compartir en Facebook</DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleCopyClick} className="hover:bg-gray-700 focus:bg-gray-700 cursor-pointer">
+                            <DropdownMenuItem onClick={handleCopyClick} className="hover:bg-gray-700 focus:bg-gray-700 cursor-pointer"> 
                               {isCopied ? <CheckIcon className="h-4 w-4 mr-2 p-2 text-green-400"/> : <CopyIcon className="h-4 w-4 mr-2 p-2 text-slate-50"/>}
                               {isCopied ? '¡Copiado!' : 'Copiar Enlace'}
                             </DropdownMenuItem>
@@ -538,7 +597,7 @@ export default function HomePage() {
                         className="bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
                       />
                       {isCurrentImageLoading && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-slate-200 dark:bg-gray-800"><LoadingGiphy title="loading animation" className="w-32 h-32 relative" /></div>
+                        <div className="absolute inset-0 flex items-center justify-center bg-slate-200 dark:bg-slate-200"><LoadingGiphy title="loading animation" className="w-32 h-32 relative" /></div>
                       )}
                       <Image src={currentChapter.imageUrl} alt={currentChapter.prompt} fill 
                         key={currentChapter.imageUrl} // Añadir key para forzar re-evaluación si la URL cambia
@@ -558,7 +617,7 @@ export default function HomePage() {
                       <p className="text-sm italic">"{currentChapter.prompt}"</p>
                       <p className="text-xs font-semibold mt-1 opacity-70">por {currentChapter.creatorName}</p>
                   </div>
-                  <div className="hidden md:flex justify-center items-center gap-2 md:gap-4 text-slate-200 dark:text-slate-400">
+                  <div className="hidden md:flex justify-center items-center gap-2 md:gap-4 text-slate-200 dark:text-slate-200">
                       <Button variant="ghost" size="icon" onClick={() => navigate('last')} title="Retrocede" className="hover:scale-110 active:scale-95 transition-transform duration-150"><SkipBackIcon className="w-5 h-5" /></Button>
                       <Button variant="ghost" size="icon" onClick={() => navigate('prev')} title="Retrocede" className="hover:scale-110 active:scale-95 transition-transform duration-150"><ChevronLeftIcon className="w-6 h-6" /></Button>
                       <Button variant="ghost" size="icon" className="w-12 h-12 hover:scale-110 active:scale-95 transition-transform duration-150" onClick={handlePlayback} title={isPlaying ? "Pausar" : "Reproducir"}>{isPlaying ? <PauseIcon className="w-6 h-6"/> : <PlayIcon className="w-6 h-6"/>}</Button>
@@ -572,16 +631,16 @@ export default function HomePage() {
       <footer className="fixed bottom-0 left-0 right-0 z-20 p-4">
         <div className="w-full max-w-2xl mx-auto space-y-2">
           {remainingAttempts !== null && (
-            <div className="inline-flex items-center justify-start text-xs text-slate-200 dark:text-slate-400 mb-2 px-3 py-1 bg-primary/10 dark:bg-black/30 backdrop-blur-sm rounded-full">
+            <div className="inline-flex items-center justify-start text-xs text-slate-200 dark:text-slate-400 mb-2 px-3 py-1 bg-primary/10 dark:bg-primary/30 backdrop-blur-sm rounded-full">
               <EggIcon className="h-4 w-4 mr-1" /> {/* Asegúrate de que EggIcon esté importado */}
               <span>{remainingAttempts} {remainingAttempts === 1 ? "huevo / egg" : "huevos / eggs"}</span>
             </div>
           )}
-          <form onSubmit={handleSubmit} className="p-2 bg-white text-slate-50 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200 dark:border-gray-700 space-y-2">
+          <form onSubmit={handleSubmit} className="p-2 bg-white text-slate-50 dark:bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200 dark:-slate-200 space-y-2">
             <Textarea placeholder="Continúa la historia (tu Kasaka)... / Continue the story (your Kasaka)..." value={prompt} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)} className="w-full p-2 text-base bg-transparent border-none focus:ring-0 focus:outline-none resize-none" rows={2} required minLength={10} maxLength={500} disabled={isLoading}/>
-            <div className="flex items-center gap-2 border-t  border-slate-200 dark:border-gray-700 pt-2">
-              <Input placeholder="Tu nombre / Your name" value={creatorName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorName(e.target.value)} required disabled={isLoading} className="bg-slate-100 dark:bg-gray-800 border-none h-9"/>
-              <Input placeholder="@usuario.instagram (opcional)" value={creatorInstagram} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorInstagram(e.target.value)} disabled={isLoading} className="bg-slate-100 dark:bg-gray-800 border-none h-9"/>
+            <div className="flex items-center gap-2 border-t border-slate-200 dark:border-slate-200 pt-2">
+              <Input placeholder="Tu nombre / Your name" value={creatorName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorName(e.target.value)} required disabled={isLoading} className="bg-slate-100 dark:bg-slate-100 border-none h-9"/>
+              <Input placeholder="@usuario.instagram (opcional)" value={creatorInstagram} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorInstagram(e.target.value)} disabled={isLoading} className="bg-slate-100 dark:bg-slate-100 border-none h-9"/>
               <Button
                 type="submit" 
                 size="icon" 
@@ -607,14 +666,14 @@ export default function HomePage() {
           </form>
           {error && <p className="text-center text-red-500 text-sm mt-1 animate__animated animate__fadeInUp animate__faster">{error === 'errorTooLong' ? 'La generación de la imagen está tardando demasiado. Por favor, intenta de nuevo más tarde.' : error === 'errorJobNotFound' ? 'El trabajo de generación no fue encontrado.' : error === 'errorGeneric' ? 'Algo salió mal.' : error}</p>}
           <div className="text-center">
-            <Dialog>
+            <Dialog> 
               <DialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-xs text-slate-400 hover:bg-slate-500/70 active:bg-slate-50/20 transition-colors bg-primary/10 dark:bg-black/30 backdrop-blur-sm rounded-full">
+                <Button variant="ghost" size="sm" className="text-xs text-slate-400 hover:bg-slate-500/70 active:bg-slate-50/20 transition-colors bg-primary/10 dark:bg-primary/10 backdrop-blur-sm rounded-full">
                   <InfoIcon className="h-3 w-3 mr-1 p-1"/>
                   Leer Info / Read Info
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md text-blue-600 dark:text-blue-600  bg-slate-700 dark:bg-gray-900" showCloseButton={true}> {/* Asegúrate de que showCloseButton sea true si quieres el botón de cerrar por defecto */}
+              <DialogContent className="max-w-md text-blue-600 dark:text-blue-600  bg-slate-700 dark:bg-slate-700" showCloseButton={true}> {/* Asegúrate de que showCloseButton sea true si quieres el botón de cerrar por defecto */}
                 <DialogHeader className="items-center">
                   <a href="https://purakasaka.com/proyecto/historias-de-la-gallinga/" target="_blank" rel="noopener noreferrer" className="block w-20 h-20 hover:scale-105 transition-transform" aria-label="Conoce el proyecto Historias de la Gallinga">
                     <Lottie animationData={lottieAnimationData} loop={true} />
@@ -632,7 +691,7 @@ export default function HomePage() {
                           {step.heading && (
                             <div className="flex items-center mb-1"> {/* Contenedor para alinear icono y título */}
                               {IconComponent && (
-                                <IconComponent className="h-5 w-5 mr-2 text-blue-700 dark:text-blue-600" /> /* Icono */
+                                <IconComponent className="h-5 w-5 mr-2 text-blue-700 dark:text-blue-700" /> /* Icono */
                               )}
                               <h4 className="font-semibold text-blue-700 dark:text-blue-700 mb-0"> {/* Título, mb-0 porque el div padre tiene mb-1 */}
                                 {step.heading}
@@ -647,7 +706,7 @@ export default function HomePage() {
                     })()
                   ))}
                   {instructionsContent[instructionsLang].outro && (
-                    <p className="mt-6 pt-3 border-0 border-slate-600/0 dark:border-gray-700 font-semibold text-center text-blue-600 dark:text-blue-600">
+                    <p className="mt-6 pt-3 border-0 border-slate-600/0 dark:border-slate-600/0 font-semibold text-center text-blue-600 dark:text-blue-600">
                       {instructionsContent[instructionsLang].outro}
                     </p>
                   )}
@@ -696,7 +755,7 @@ export default function HomePage() {
 
       {pendingApprovalImage && (
         <Dialog open={!!pendingApprovalImage} onOpenChange={(isOpen) => { if (!isOpen && !isProcessingAction) setPendingApprovalImage(null); }} aria-labelledby="approval-dialog-title" aria-describedby="approval-dialog-description">
-          <DialogContent className="bg-white dark:bg-gray-900 data-[state=open]:animate__animated data-[state=open]:animate__zoomIn data-[state=open]:animate__faster" showCloseButton={false}>
+          <DialogContent className="bg-white dark:bg-white data-[state=open]:animate__animated data-[state=open]:animate__zoomIn data-[state=open]:animate__faster" showCloseButton={false}>
             {/* Añadir DialogHeader, DialogTitle y DialogDescription para accesibilidad */}
             <DialogHeader>
               <DialogTitle id="approval-dialog-title">Confirmar / Confirm</DialogTitle>
