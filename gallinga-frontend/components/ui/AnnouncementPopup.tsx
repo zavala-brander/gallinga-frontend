@@ -34,10 +34,16 @@ export function AnnouncementPopup({ title, message }: AnnouncementPopupProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="bg-slate-700 dark:bg-slate-700 text-slate-200 border-slate-600" showCloseButton={true}>
+      <DialogContent 
+        className="bg-slate-700 dark:bg-slate-700 text-slate-200 border-slate-600 sm:max-w-sm" 
+        showCloseButton={true}
+      >
         <DialogHeader className="items-center text-center pt-4">
           <div className="w-20 h-20"><Lottie animationData={lottieAnimationData} loop={true} /></div>
-          <DialogTitle className="text-primary-light text-2xl">{title}</DialogTitle>
+          <DialogTitle
+            className="text-primary-light text-2xl text-center"
+            dangerouslySetInnerHTML={{ __html: title }}
+          />
           <DialogDescription className="text-slate-300 pt-2 px-4">{message.split('/').map((line, index) => (<p key={index} className={index > 0 ? 'mt-3 text-sm' : 'text-base'}>{line.trim()}</p>))}</DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-4">
