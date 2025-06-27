@@ -29,6 +29,8 @@ import {
   RATE_IMAGE_API_ENDPOINT,
   PURAKASAKA_URL
 } from '@/lib/apiConstants';
+import { announcementContent } from '@/assets/announcementContent'; // Importar contenido del anuncio
+import { AnnouncementPopup } from '@/components/ui/AnnouncementPopup'; // Importar el nuevo componente
 import { instructionsContent, InstructionsLang } from '@/assets/instructionsContent'; // Importar el contenido de las instrucciones
 import { getTimestampInSeconds, handleDownload, handleSocialShare } from '@/lib/utils';
 
@@ -501,6 +503,12 @@ export default function HomePage() {
       <Suspense fallback={null}> {/* Puedes poner un spinner o null como fallback */}
         <PromptHandler setPromptForParent={setPrompt} />
       </Suspense>
+      {announcementContent.enabled && (
+        <AnnouncementPopup
+          title={announcementContent.title}
+          message={announcementContent.message}
+        />
+      )}
       <div className="flex flex-col h-screen bg-background text-foreground"> {/* Restaurado con bg-background y text-foreground semánticos */}
       <header className="fixed top-0 left-0 right-0 z-30 flex justify-between items-center p-2 md:p-4 dark:bg-black/50 ">
         <a href="https://purakasaka.com/proyecto/historias-de-la-gallinga/" target="_blank" rel="noopener noreferrer" className="w-12 h-12 hover:scale-110 active:scale-95 transition-transform duration-150">
@@ -637,10 +645,19 @@ export default function HomePage() {
             </div>
           )}
           <form onSubmit={handleSubmit} className="p-2 bg-white text-slate-50 dark:bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200 dark:-slate-200 space-y-2">
-            <Textarea placeholder="Continúa la historia (tu Kasaka)... / Continue the story (your Kasaka)..." value={prompt} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)} className="w-full p-2 text-base bg-transparent border-none focus:ring-0 focus:outline-none resize-none" rows={2} required minLength={10} maxLength={500} disabled={isLoading}/>
+            <Textarea
+              placeholder={
+                announcementContent.enabled
+                  ? "La historia ha concluido. ¡Gracias por participar! / The story is complete. Thanks for participating!"
+                  : "Continúa la historia (tu Kasaka)... / Continue the story (your Kasaka)..."
+              }
+              value={prompt}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
+              className="w-full p-2 text-base bg-transparent border-none focus:ring-0 focus:outline-none resize-none" rows={2} required minLength={10} maxLength={500} disabled={isLoading || announcementContent.enabled}
+            />
             <div className="flex items-center gap-2 border-t border-slate-200 dark:border-slate-200 pt-2">
-              <Input placeholder="Tu nombre / Your name" value={creatorName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorName(e.target.value)} required disabled={isLoading} className="bg-slate-100 dark:bg-slate-100 border-none h-9"/>
-              <Input placeholder="@usuario.instagram (opcional)" value={creatorInstagram} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorInstagram(e.target.value)} disabled={isLoading} className="bg-slate-100 dark:bg-slate-100 border-none h-9"/>
+              <Input placeholder="Tu nombre / Your name" value={creatorName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorName(e.target.value)} required disabled={isLoading || announcementContent.enabled} className="bg-slate-100 dark:bg-slate-100 border-none h-9"/>
+              <Input placeholder="@usuario.instagram (opcional)" value={creatorInstagram} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorInstagram(e.target.value)} disabled={isLoading || announcementContent.enabled} className="bg-slate-100 dark:bg-slate-100 border-none h-9"/>
               <Button
                 type="submit" 
                 size="icon" 
@@ -648,7 +665,7 @@ export default function HomePage() {
                            enabled:hover:bg-primary/90 enabled:hover:scale-105 
                            enabled:active:bg-primary/80 enabled:active:scale-95 
                            transition-all duration-150 relative overflow-hidden" // Añadido relative y overflow-hidden
-                disabled={isLoading || !prompt.trim() || (remainingAttempts !== null && remainingAttempts <= 0)}
+                disabled={isLoading || !prompt.trim() || (remainingAttempts !== null && remainingAttempts <= 0) || announcementContent.enabled}
               >
                 <AnimatePresence mode="wait" initial={false}>
                   {isLoading ? (
